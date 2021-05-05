@@ -1,0 +1,41 @@
+environment: development
+
+server:
+  hostname: localhost
+  port: 8000
+  prefix:
+  database:
+    hostname: localhost
+    port: 5432
+    user: postgres
+    password: local_password
+    database: bakalo
+    timezone: Asia/Jakarta
+    auto_migrate: true
+
+app:
+  boards:
+    pol:
+      title: "Politik"
+      short: "pol"
+    teh:
+      title: "Teknologi"
+      short: "teh"
+    oto:
+      title: "Otomotif"
+      short: "oto"
+    ipa:
+      title: "Sains dan Matematika"
+      short: "ipa"
+
+#  { name: 'Politik', shorthand: 'pol' },
+#  { name: 'Teknologi', shorthand: 'teh' },
+#  { name: 'Otomotif', shorthand: 'oto' },
+#  { name: 'Sains', shorthand: 'ipa' },
+#  { name: 'Video Games', shorthand: 'gim' },
+#  { name: 'Musik', shorthand: 'mus' },
+#  { name: 'Olahraga', shorthand: 'ora' },
+#  { name: 'TV & Film', shorthand: 'tvf' },
+#  { name: 'Anime & Manga', shorthand: 'wib' },
+#  { name: 'Paranormal', shorthand: 'par' },
+#  { name: 'Bisnis & Keuangan', shorthand: 'biz' }
