@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Web API" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="bakalo" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="serve" />
+    <kind value="FILE" />
+    <package value="github.com/nguli-team/bakalo" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

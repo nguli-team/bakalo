@@ -5,7 +5,7 @@ server:
   port: 8000
   prefix:
   database:
-    hostname: localhost
+    host: localhost
     port: 5432
     user: postgres
     password: local_password
@@ -16,26 +16,18 @@ server:
 app:
   boards:
     pol:
-      title: "Politik"
-      short: "pol"
+      name: "Politik"
+      shorthand: "pol"
+      description: "Tempat berdiskusi politik dan berita politik terkini"
     teh:
-      title: "Teknologi"
-      short: "teh"
+      name: "Teknologi"
+      shorthand: "teh"
+      description: "Tempat berdiskusi teknologi seperti pemmrograman, komputer, gadget, dan lainnya"
     oto:
-      title: "Otomotif"
-      short: "oto"
+      name: "Otomotif"
+      shorthand: "oto"
+      description: "Tempat berdiskusi otomotif"
     ipa:
-      title: "Sains dan Matematika"
-      short: "ipa"
-
-#  { name: 'Politik', shorthand: 'pol' },
-#  { name: 'Teknologi', shorthand: 'teh' },
-#  { name: 'Otomotif', shorthand: 'oto' },
-#  { name: 'Sains', shorthand: 'ipa' },
-#  { name: 'Video Games', shorthand: 'gim' },
-#  { name: 'Musik', shorthand: 'mus' },
-#  { name: 'Olahraga', shorthand: 'ora' },
-#  { name: 'TV & Film', shorthand: 'tvf' },
-#  { name: 'Anime & Manga', shorthand: 'wib' },
-#  { name: 'Paranormal', shorthand: 'par' },
-#  { name: 'Bisnis & Keuangan', shorthand: 'biz' }
+      name: "Sains dan Matematika"
+      shorthand: "ipa"
+      description: "Tempat berdiskusi sains dan ilmu eksak lainnya"
