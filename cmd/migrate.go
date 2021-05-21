@@ -33,7 +33,7 @@ func newMigrateCmd() *cobra.Command {
 }
 
 func migrateGorm(cfg config.Config, tableOnly bool) error {
-	db, err := storage.NewGormPostgres(cfg.Server.Database)
+	db, err := storage.NewGormPostgres(cfg.Database)
 	if err != nil {
 		return err
 	}
@@ -71,6 +71,6 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 		}
 	}
 
-	logger.Log.Info("[MIGRATION] migration successful")
+	logger.Log.Info("migration successful")
 	return nil
 }

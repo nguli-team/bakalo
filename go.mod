@@ -5,11 +5,13 @@ go 1.15
 require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
+	github.com/go-chi/render v1.0.1 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.9.1 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.1.3 // indirect

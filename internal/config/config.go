@@ -6,9 +6,10 @@ import (
 
 // Config contains cmd configurations such as server, storage, etc.
 type Config struct {
-	Env    Environment  `mapstructure:"environment"`
-	Server ServerConfig `mapstructure:"server"`
-	App    AppConfig    `mapstructure:"app"`
+	Env      Environment      `mapstructure:"environment"`
+	Server   HTTPServerConfig `mapstructure:"server"`
+	Database DatabaseConfig   `mapstructure:"database"`
+	App      AppConfig        `mapstructure:"app"`
 }
 
 // NewConfig creates new configuration struct from YAML file.
@@ -40,6 +41,6 @@ func (c *Config) checkConfig() error {
 	if err != nil {
 		return err
 	}
-	// TODO(core): (Okka) actually implements config checks
+	// TODO(core): (Okka) actually implements Config checks
 	return nil
 }

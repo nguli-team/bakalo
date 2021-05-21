@@ -24,7 +24,7 @@ func init() {
 	}
 
 	// set global logger
-	l, err := logger.NewZapSugaredLogger(cfg.Env)
+	l, err := logger.NewLogrusLogger(cfg.Env, os.Stdout)
 	if err != nil {
 		panic(err)
 	}

@@ -1,11 +1,10 @@
 package config
 
-// ServerConfig contains configuration for REST API server
-type ServerConfig struct {
-	Hostname string         `mapstructure:"hostname"`
-	Port     int            `mapstructure:"port"`
-	Prefix   string         `mapstructure:"prefix"`
-	Database DatabaseConfig `mapstructure:"database"`
+// HTTPServerConfig contains configuration for REST API server
+type HTTPServerConfig struct {
+	Hostname string `mapstructure:"hostname"`
+	Port     int    `mapstructure:"port"`
+	Prefix   string `mapstructure:"prefix"`
 }
 
 // DatabaseConfig contains storage connection configuration for relational storage

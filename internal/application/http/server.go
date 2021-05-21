@@ -5,14 +5,26 @@ import (
 	"bakalo.li/internal/logger"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
 
-func Serve(ctx context.Context, cfg config.ServerConfig) {
-	router := InitChiRouter()
+type ServerConfig struct {
+	Env                 config.Environment
+	RequestLoggerOutput io.Writer
+	HTTPServerConfig    config.HTTPServerConfig
+}
 
-	addr := fmt.Sprintf("%s:%d", cfg.Hostname, cfg.Port)
+func Serve(ctx context.Context, cfg *ServerConfig) {
+	services, err := NewServiceContainer(cfg.DatabaseConfig)
+	if err != nil {
+		logger.Log.Fatal(err)
+	}
+
+	router := NewChiRouter(env, services)
+
+	addr := fmt.Sprintf("%s:%d", srvCfg.Hostname, srvCfg.Port)
 	srv := &http.Server{
 		Addr:    addr,
 		Handler: router,
@@ -32,7 +44,9 @@ func Serve(ctx context.Context, cfg config.ServerConfig) {
 	ctxShutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := srv.Shutdown(ctxShutdown)
+	// put clean up code here
+
+	err = srv.Shutdown(ctxShutdown)
 	if err != nil {
 		logger.Log.Fatal(err)
 	}
