@@ -19,7 +19,10 @@ func newServeCmd() *cobra.Command {
 				<-c
 				cancel()
 			}()
-			bakaloHttp.Serve(ctx, cfg.Env, cfg.Server)
+			bakaloHttp.Serve(ctx, &bakaloHttp.ServeConfig{
+				Config:              cfg,
+				RequestLoggerOutput: os.Stdout,
+			})
 		},
 	}
 	return serveCmd

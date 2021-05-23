@@ -25,7 +25,7 @@ type BoardRepository interface {
 	FindAll(ctx context.Context) ([]Board, error)
 	FindByID(ctx context.Context, id int64) (Board, error)
 	FindByShorthand(ctx context.Context, shorthand string) (Board, error)
-	Create(ctx context.Context, board *Board) error
-	Update(ctx context.Context, board *Board) error
+	Create(ctx context.Context, board *Board) (Board, error)
+	Update(ctx context.Context, board *Board) (Board, error)
 	Delete(ctx context.Context, id int64) error
 }

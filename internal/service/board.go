@@ -24,9 +24,11 @@ func (s boardService) FindAll(ctx context.Context) ([]domain.Board, error) {
 }
 
 func (s boardService) FindByID(ctx context.Context, id int64) (domain.Board, error) {
-	panic("implement me")
+	board, err := s.repository.FindByID(ctx, id)
+	return board, err
 }
 
 func (s boardService) FindByShorthand(ctx context.Context, shorthand string) (domain.Board, error) {
-	panic("implement me")
+	board, err := s.repository.FindByShorthand(ctx, shorthand)
+	return board, err
 }

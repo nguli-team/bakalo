@@ -10,21 +10,21 @@ import (
 	"time"
 )
 
-type ServerConfig struct {
-	Env                 config.Environment
+type ServeConfig struct {
+	Config              config.Config
 	RequestLoggerOutput io.Writer
-	HTTPServerConfig    config.HTTPServerConfig
 }
 
-func Serve(ctx context.Context, cfg *ServerConfig) {
-	services, err := NewServiceContainer(cfg.DatabaseConfig)
+func Serve(ctx context.Context, cfg *ServeConfig) {
+	services, err := NewServiceContainer(cfg.Config.Database)
 	if err != nil {
 		logger.Log.Fatal(err)
 	}
 
-	router := NewChiRouter(env, services)
+	router := NewChiRouter(cfg.Config.Env, cfg.RequestLoggerOutput, services)
 
-	addr := fmt.Sprintf("%s:%d", srvCfg.Hostname, srvCfg.Port)
+	serverCfg := cfg.Config.Server
+	addr := fmt.Sprintf("%s:%d", serverCfg.Hostname, serverCfg.Port)
 	srv := &http.Server{
 		Addr:    addr,
 		Handler: router,
