@@ -12,20 +12,24 @@ import (
 )
 
 type BoardHandler struct {
-	service domain.BoardService
+	boardService domain.BoardService
 }
 
 func NewBoardHandler(boardService domain.BoardService) BoardHandler {
 	return BoardHandler{
-		service: boardService,
+		boardService: boardService,
 	}
 }
 
 func (h BoardHandler) ListBoards(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	boards, _ := h.service.FindAll(ctx)
+	boards, err := h.boardService.FindAll(ctx)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInternal(err))
+		return
+	}
 
-	err := render.RenderList(w, r, response.NewBoardListResponse(boards))
+	err = render.RenderList(w, r, response.NewBoardListResponse(boards))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))
 		return
@@ -35,47 +39,58 @@ func (h BoardHandler) ListBoards(w http.ResponseWriter, r *http.Request) {
 func (h BoardHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var board domain.Board
+	var board *domain.Board
 	var err error
 
 	if boardID := chi.URLParam(r, "id"); boardID != "" {
-		var id int64
-		id, err = strconv.ParseInt(boardID, 10, 64)
+		var id64 uint64
+		id64, err = strconv.ParseUint(boardID, 10, 32)
 		if err != nil {
 			_ = render.Render(w, r, response.ErrInvalidRequest(err))
 			return
 		}
-		board, err = h.service.FindByID(ctx, id)
-	} else if boardShorthand := chi.URLParam(r, "shorthand"); boardShorthand != "" {
-		board, err = h.service.FindByShorthand(ctx, boardShorthand)
-	} else {
-		_ = render.Render(w, r, response.ErrInvalidRequest(errors.New("id or shorthand is invalid")))
-		return
+		id := uint32(id64)
+		board, err = h.boardService.FindByID(ctx, id)
 	}
 
-	// FIXME: This is catch all error, but not every error is indicating a record is not found in the repository
 	if err != nil {
-		_ = render.Render(w, r, response.ErrNotFound())
+		if errors.Is(err, storage.ErrRecordNotFound) {
+			_ = render.Render(w, r, response.ErrNotFound())
+		} else {
+			_ = render.Render(w, r, response.ErrInternal(err))
+		}
 		return
 	}
 
-	_ = render.Render(w, r, response.NewBoardResponse(board))
+	err = render.Render(w, r, response.NewBoardResponse(board))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrRender(err))
+		return
+	}
 }
 
 func (h BoardHandler) GetByShorthand(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var board domain.Board
+	var board *domain.Board
 	var err error
 
 	if boardShorthand := chi.URLParam(r, "shorthand"); boardShorthand != "" {
-		board, err = h.service.FindByShorthand(ctx, boardShorthand)
+		board, err = h.boardService.FindByShorthand(ctx, boardShorthand)
 	}
 
-	if errors.Is(err, storage.ErrRecordNotFound) {
-		_ = render.Render(w, r, response.ErrNotFound())
+	if err != nil {
+		if errors.Is(err, storage.ErrRecordNotFound) {
+			_ = render.Render(w, r, response.ErrNotFound())
+		} else {
+			_ = render.Render(w, r, response.ErrInternal(err))
+		}
 		return
 	}
 
-	_ = render.Render(w, r, response.NewBoardResponse(board))
+	err = render.Render(w, r, response.NewBoardResponse(board))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrRender(err))
+		return
+	}
 }

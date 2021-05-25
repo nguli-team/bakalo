@@ -9,21 +9,28 @@ import (
 )
 
 type ServiceContainer struct {
-	BoardService domain.BoardService
+	BoardService  domain.BoardService
+	ThreadService domain.ThreadService
 }
 
-func NewServiceContainer(cfg config.DatabaseConfig) (ServiceContainer, error) {
+func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	// storages
 	gormDB, err := storage.NewGormPostgres(cfg)
 	if err != nil {
-		return ServiceContainer{}, err
+		return nil, err
 	}
 
-	// board service
+	// services
 	boardRepository := repository.NewGormBoardRepository(gormDB)
-	boardService := service.NewBoardService(boardRepository)
+	threadRepository := repository.NewGormThreadRepository(gormDB)
+	postRepository := repository.NewGormPostRepository(gormDB)
 
-	return ServiceContainer{
-		BoardService: boardService,
+	// repositories
+	boardService := service.NewBoardService(boardRepository)
+	threadService := service.NewThreadService(threadRepository, postRepository)
+
+	return &ServiceContainer{
+		BoardService:  boardService,
+		ThreadService: threadService,
 	}, nil
 }

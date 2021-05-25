@@ -10,6 +10,9 @@ clean:
 	docker-compose -f ${DOCKER_DIR}/docker-compose.local.yml down -v
 	rm -rf bin
 
+start-dev:
+	docker-compose -f ${DOCKER_DIR}/docker-compose.local.yml up -d
+
 run-dev:
 	go run ${MAIN_FILE} serve
 

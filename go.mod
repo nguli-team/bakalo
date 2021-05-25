@@ -6,6 +6,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/go-chi/render v1.0.1 // indirect
+	github.com/google/uuid v1.2.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jinzhu/gorm v1.9.16 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect

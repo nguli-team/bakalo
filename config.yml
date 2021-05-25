@@ -23,7 +23,7 @@ app:
     teh:
       name: "Teknologi"
       shorthand: "teh"
-      description: "Tempat berdiskusi teknologi seperti pemmrograman, komputer, gadget, dan lainnya"
+      description: "Tempat berdiskusi teknologi seperti pemrograman, komputer, gadget, dan lainnya"
     oto:
       name: "Otomotif"
       shorthand: "oto"

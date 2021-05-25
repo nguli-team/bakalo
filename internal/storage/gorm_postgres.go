@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // NewGormPostgres creates a new storage connection with gorm
@@ -19,7 +20,7 @@ func NewGormPostgres(cfg config.DatabaseConfig) (*gorm.DB, error) {
 		cfg.TimeZone,
 	)
 
-	gormConfig := &gorm.Config{}
+	gormConfig := &gorm.Config{Logger: logger.Default.LogMode(logger.Info)}
 
 	db, err := gorm.Open(postgres.Open(dsn), gormConfig)
 	if err != nil {

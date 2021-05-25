@@ -15,7 +15,7 @@ func NewBoardService(repository domain.BoardRepository) domain.BoardService {
 	}
 }
 
-func (s boardService) FindAll(ctx context.Context) ([]domain.Board, error) {
+func (s boardService) FindAll(ctx context.Context) ([]*domain.Board, error) {
 	boards, err := s.repository.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -23,12 +23,18 @@ func (s boardService) FindAll(ctx context.Context) ([]domain.Board, error) {
 	return boards, nil
 }
 
-func (s boardService) FindByID(ctx context.Context, id int64) (domain.Board, error) {
+func (s boardService) FindByID(ctx context.Context, id uint32) (*domain.Board, error) {
 	board, err := s.repository.FindByID(ctx, id)
-	return board, err
+	if err != nil {
+		return nil, err
+	}
+	return board, nil
 }
 
-func (s boardService) FindByShorthand(ctx context.Context, shorthand string) (domain.Board, error) {
+func (s boardService) FindByShorthand(ctx context.Context, shorthand string) (*domain.Board, error) {
 	board, err := s.repository.FindByShorthand(ctx, shorthand)
-	return board, err
+	if err != nil {
+		return nil, err
+	}
+	return board, nil
 }

@@ -47,6 +47,8 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 	// migrate tables
 	err = db.AutoMigrate(
 		&domain.Board{},
+		&domain.Thread{},
+		&domain.Post{},
 	)
 	if err != nil {
 		return err
@@ -54,6 +56,7 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 
 	// return early if only creating tables
 	if tableOnly {
+		logger.Log.Info("table migration successful")
 		return nil
 	}
 
@@ -61,7 +64,7 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 	boardRepo := repository.NewGormBoardRepository(db)
 	for _, b := range cfg.App.Boards {
 		ctx := context.TODO()
-		err = boardRepo.Create(ctx, &domain.Board{
+		_, err = boardRepo.Create(ctx, &domain.Board{
 			Shorthand:   b.Shorthand,
 			Name:        b.Name,
 			Description: b.Description,

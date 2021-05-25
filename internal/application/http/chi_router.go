@@ -13,10 +13,12 @@ import (
 	"net/http"
 )
 
-func NewChiRouter(env config.Environment, loggerOutput io.Writer, services ServiceContainer) *chi.Mux {
+func NewChiRouter(env config.Environment, loggerOutput io.Writer, services *ServiceContainer) *chi.Mux {
 	router := chi.NewRouter()
 
 	// middlewares
+	router.Use(middleware.RealIP)
+	router.Use(middleware.RequestID)
 	if env == config.Production {
 		reqLogger := logrus.New()
 		reqLogger.Formatter = &logrus.JSONFormatter{
@@ -27,17 +29,19 @@ func NewChiRouter(env config.Environment, loggerOutput io.Writer, services Servi
 	} else {
 		router.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger.Log}))
 	}
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
 	router.Use(render.SetContentType(render.ContentTypeJSON))
 
+	// handlers
 	boardHandler := handler.NewBoardHandler(services.BoardService)
+	threadHandler := handler.NewThreadHandler(services.ThreadService)
 
 	router.Route("/v1", func(r chi.Router) {
 		r.Get("/boards", boardHandler.ListBoards)
 		r.Get("/board/{id:[0-9]+}", boardHandler.GetByID)
-		r.Get("/board/{shorthand:[a-z]+}", boardHandler.GetByID)
+		r.Get("/board/{shorthand:[a-z]+}", boardHandler.GetByShorthand)
+		r.Get("/threads", threadHandler.ListThreads)
+		r.Post("/thread", threadHandler.CreateThreadMultipart)
 	})
 
 	router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
