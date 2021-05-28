@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -30,11 +31,35 @@ func NewThreadHandler(threadService domain.ThreadService) *ThreadHandler {
 
 func (h ThreadHandler) ListThreads(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	threads, err := h.threadService.FindAll(ctx)
-	if err != nil {
-		_ = render.Render(w, r, response.ErrInternal(err))
+
+	var threads []domain.Thread
+	var err error
+
+	if qBoardID := r.URL.Query().Get("board_id"); qBoardID != "" {
+		boardID, err := util.StrToUint32(qBoardID)
+		if err != nil {
+			tIDInvalidErr := errors.New("query 'board_id' is invalid")
+			_ = render.Render(w, r, response.ErrInvalidRequest(tIDInvalidErr))
+		}
+
+		threads, err = h.threadService.FindByBoardID(ctx, boardID)
+		if err != nil {
+			_ = render.Render(w, r, response.ErrInternal(err))
+			return
+		}
+	} else {
+		threads, err = h.threadService.FindAll(ctx)
+		if err != nil {
+			_ = render.Render(w, r, response.ErrInternal(err))
+			return
+		}
+	}
+
+	if len(threads) == 0 {
+		render.JSON(w, r, make([]interface{}, 0))
 		return
 	}
+
 	err = render.RenderList(w, r, response.NewThreadListResponse(threads))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))

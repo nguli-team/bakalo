@@ -7,20 +7,25 @@ import (
 	"bakalo.li/internal/domain"
 	"bakalo.li/internal/logger"
 	"bakalo.li/internal/storage"
+	"bakalo.li/internal/storage/cache"
+	"bakalo.li/internal/util"
 )
 
 type threadService struct {
 	threadRepository domain.ThreadRepository
 	postService      domain.PostService
+	cacheStorage     cache.Cache
 }
 
 func NewThreadService(
 	threadRepository domain.ThreadRepository,
 	postService domain.PostService,
+	cacheStorage cache.Cache,
 ) domain.ThreadService {
 	return &threadService{
 		threadRepository: threadRepository,
 		postService:      postService,
+		cacheStorage:     cacheStorage,
 	}
 }
 
@@ -41,11 +46,32 @@ func (s threadService) fillOPDetails(ctx context.Context, thread *domain.Thread)
 }
 
 func (s threadService) FindByBoardID(ctx context.Context, boardID uint32) ([]domain.Thread, error) {
-	options := &domain.ThreadsOptions{WithPosts: true}
+	cacheKey := cache.BoardThreadsKeyPrefix + util.Uint32ToStr(boardID)
+
+	// check cache first
+	cachedThreads, found := s.cacheStorage.Get(cacheKey)
+	if found {
+		return cachedThreads.([]domain.Thread), nil
+	}
+
+	// get from DB
+	options := &domain.ThreadsOptions{WithPosts: false}
 	threads, err := s.threadRepository.FindByBoardID(ctx, boardID, options)
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO: use goroutine here
+	for i, _ := range threads {
+		err := s.fillOPDetails(ctx, &threads[i])
+		if err != nil {
+			continue
+		}
+	}
+
+	// cache DB result
+	s.cacheStorage.Set(cacheKey, threads, cache.DefaultExpiration)
+
 	return threads, err
 }
 
@@ -67,9 +93,23 @@ func (s threadService) FindAll(ctx context.Context) ([]domain.Thread, error) {
 }
 
 func (s threadService) FindByID(ctx context.Context, id uint32) (*domain.Thread, error) {
-	thread, err := s.threadRepository.FindByID(ctx, id, nil)
+	cacheKey := cache.ThreadPostsKeyPrefix + util.Uint32ToStr(id)
+	options := &domain.ThreadsOptions{WithPosts: true}
+
+	cachedPosts, found := s.cacheStorage.Get(cacheKey)
+	if found {
+		options.WithPosts = false
+	}
+
+	thread, err := s.threadRepository.FindByID(ctx, id, options)
 	if err != nil {
 		return nil, err
+	}
+
+	if found {
+		thread.Posts = cachedPosts.([]domain.Post)
+	} else {
+		s.cacheStorage.Set(cacheKey, thread.Posts, cache.DefaultExpiration)
 	}
 
 	err = s.fillOPDetails(ctx, thread)
@@ -81,6 +121,10 @@ func (s threadService) FindByID(ctx context.Context, id uint32) (*domain.Thread,
 }
 
 func (s threadService) Create(ctx context.Context, thread *domain.Thread) (*domain.Thread, error) {
+	// invalidate caches first
+	s.cacheStorage.Delete(cache.AllThreadsKey)
+	s.cacheStorage.Delete(cache.BoardThreadsKeyPrefix + util.Uint32ToStr(thread.BoardID))
+
 	thread, err := s.threadRepository.Create(ctx, thread)
 	if err != nil {
 		return nil, err
@@ -104,6 +148,10 @@ func (s threadService) Create(ctx context.Context, thread *domain.Thread) (*doma
 }
 
 func (s threadService) Update(ctx context.Context, thread *domain.Thread) (*domain.Thread, error) {
+	// invalidate caches first
+	s.cacheStorage.Delete(cache.AllThreadsKey)
+	s.cacheStorage.Delete(cache.BoardThreadsKeyPrefix + util.Uint32ToStr(thread.BoardID))
+
 	thread, err := s.threadRepository.Update(ctx, thread)
 	if err != nil {
 		return nil, err

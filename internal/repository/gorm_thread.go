@@ -39,10 +39,10 @@ func (r gormThreadRepository) FindByBoardID(
 	boardID uint32,
 	options *domain.ThreadsOptions,
 ) ([]domain.Thread, error) {
-	var threads []domain.Thread
+	threads := make([]domain.Thread, 1)
 
 	var result *gorm.DB
-	result = r.DB.Where(&domain.Thread{BoardID: boardID}).Find(threads)
+	result = r.DB.Where(&domain.Thread{BoardID: boardID}).Find(&threads)
 
 	err := result.Error
 	if err != nil {
@@ -64,9 +64,7 @@ func (r gormThreadRepository) FindByID(
 
 	if options == nil {
 		// default options
-		options = &domain.ThreadsOptions{
-			WithPosts: true,
-		}
+		options = &domain.ThreadsOptions{}
 	}
 
 	if options.WithPosts {

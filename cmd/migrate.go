@@ -9,7 +9,7 @@ import (
 	"bakalo.li/internal/domain"
 	"bakalo.li/internal/logger"
 	"bakalo.li/internal/repository"
-	"bakalo.li/internal/storage"
+	"bakalo.li/internal/storage/persistence"
 )
 
 var tableOnly bool
@@ -35,7 +35,7 @@ func newMigrateCmd() *cobra.Command {
 }
 
 func migrateGorm(cfg config.Config, tableOnly bool) error {
-	db, err := storage.NewGormPostgres(cfg.Database)
+	db, err := persistence.NewGormPostgres(cfg.Database)
 	if err != nil {
 		return err
 	}

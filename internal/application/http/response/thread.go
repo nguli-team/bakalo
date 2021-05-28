@@ -24,8 +24,8 @@ func (rd *ThreadResponse) Render(w http.ResponseWriter, r *http.Request) error {
 
 func NewThreadListResponse(threads []domain.Thread) []render.Renderer {
 	var list []render.Renderer
-	for _, thread := range threads {
-		list = append(list, NewThreadResponse(&thread))
+	for i, _ := range threads {
+		list = append(list, NewThreadResponse(&threads[i]))
 	}
 	return list
 }

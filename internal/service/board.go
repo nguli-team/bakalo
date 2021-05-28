@@ -4,28 +4,45 @@ import (
 	"context"
 
 	"bakalo.li/internal/domain"
+	"bakalo.li/internal/storage/cache"
 )
 
 type boardService struct {
-	repository domain.BoardRepository
+	boardRepository domain.BoardRepository
+	cacheStorage    cache.Cache
 }
 
-func NewBoardService(repository domain.BoardRepository) domain.BoardService {
+func NewBoardService(
+	boardRepository domain.BoardRepository,
+	cacheStorage cache.Cache,
+) domain.BoardService {
 	return &boardService{
-		repository: repository,
+		boardRepository: boardRepository,
+		cacheStorage:    cacheStorage,
 	}
 }
 
 func (s boardService) FindAll(ctx context.Context) ([]domain.Board, error) {
-	boards, err := s.repository.FindAll(ctx)
+	// check cache first
+	cachedBoards, found := s.cacheStorage.Get(cache.AllBoardsKey)
+	if found {
+		return cachedBoards.([]domain.Board), nil
+	}
+
+	// get from DB
+	boards, err := s.boardRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	// cache DB Result
+	s.cacheStorage.Set(cache.AllBoardsKey, boards, cache.DefaultExpiration)
+
 	return boards, nil
 }
 
 func (s boardService) FindByID(ctx context.Context, id uint32) (*domain.Board, error) {
-	board, err := s.repository.FindByID(ctx, id)
+	board, err := s.boardRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +53,7 @@ func (s boardService) FindByShorthand(
 	ctx context.Context,
 	shorthand string,
 ) (*domain.Board, error) {
-	board, err := s.repository.FindByShorthand(ctx, shorthand)
+	board, err := s.boardRepository.FindByShorthand(ctx, shorthand)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +61,13 @@ func (s boardService) FindByShorthand(
 }
 
 func (s boardService) Update(ctx context.Context, board *domain.Board) (*domain.Board, error) {
-	board, err := s.repository.Update(ctx, board)
+	// invalidate caches first
+	s.cacheStorage.Delete(cache.AllBoardsKey)
+
+	board, err := s.boardRepository.Update(ctx, board)
 	if err != nil {
 		return nil, err
 	}
+
 	return board, nil
 }

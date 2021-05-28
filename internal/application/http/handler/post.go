@@ -47,6 +47,11 @@ func (h PostHandler) ListPosts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if len(posts) == 0 {
+		render.JSON(w, r, make([]interface{}, 0))
+		return
+	}
+
 	err = render.RenderList(w, r, response.NewPostListResponse(posts))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))

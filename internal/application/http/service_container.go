@@ -5,7 +5,8 @@ import (
 	"bakalo.li/internal/domain"
 	"bakalo.li/internal/repository"
 	"bakalo.li/internal/service"
-	"bakalo.li/internal/storage"
+	"bakalo.li/internal/storage/cache"
+	"bakalo.li/internal/storage/persistence"
 )
 
 type ServiceContainer struct {
@@ -16,7 +17,8 @@ type ServiceContainer struct {
 
 func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	// storages
-	gormDB, err := storage.NewGormPostgres(cfg)
+	gormDB, err := persistence.NewGormPostgres(cfg)
+	goCache := cache.NewGoCache()
 
 	if err != nil {
 		return nil, err
@@ -28,9 +30,9 @@ func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	postRepository := repository.NewGormPostRepository(gormDB)
 
 	// services
-	boardService := service.NewBoardService(boardRepository)
-	postService := service.NewPostService(postRepository, boardRepository, threadRepository)
-	threadService := service.NewThreadService(threadRepository, postService)
+	boardService := service.NewBoardService(boardRepository, goCache)
+	postService := service.NewPostService(postRepository, boardRepository, threadRepository, goCache)
+	threadService := service.NewThreadService(threadRepository, postService, goCache)
 
 	return &ServiceContainer{
 		BoardService:  boardService,

@@ -29,6 +29,11 @@ func (h BoardHandler) ListBoards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(boards) == 0 {
+		render.JSON(w, r, make([]interface{}, 0))
+		return
+	}
+
 	err = render.RenderList(w, r, response.NewBoardListResponse(boards))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))

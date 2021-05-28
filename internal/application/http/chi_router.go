@@ -2,9 +2,11 @@ package http
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/sirupsen/logrus"
 
@@ -50,6 +52,20 @@ func NewChiRouter(
 }
 
 func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Writer) {
+	router.Use(
+		cors.Handler(
+			cors.Options{
+				AllowedOrigins:   []string{"https://*", "http://*"},
+				AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+				AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+				AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+				ExposedHeaders:   []string{"Link"},
+				AllowCredentials: true,
+				MaxAge:           300,
+			},
+		),
+	)
+
 	router.Use(middleware.RealIP)
 	router.Use(middleware.RequestID)
 

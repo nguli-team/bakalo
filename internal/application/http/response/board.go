@@ -24,8 +24,8 @@ func (rd *BoardResponse) Render(w http.ResponseWriter, r *http.Request) error {
 
 func NewBoardListResponse(boards []domain.Board) []render.Renderer {
 	var list []render.Renderer
-	for _, board := range boards {
-		list = append(list, NewBoardResponse(&board))
+	for i, _ := range boards {
+		list = append(list, NewBoardResponse(&boards[i]))
 	}
 	return list
 }
