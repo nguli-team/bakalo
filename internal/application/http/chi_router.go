@@ -2,7 +2,6 @@ package http
 
 import (
 	"io"
-	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -23,24 +22,12 @@ func NewChiRouter(
 	router := chi.NewRouter()
 
 	// middlewares
-	router.Use(middleware.RealIP)
-	router.Use(middleware.RequestID)
-	if env == config.Production {
-		reqLogger := logrus.New()
-		reqLogger.Formatter = &logrus.JSONFormatter{
-			DisableTimestamp: true,
-		}
-		reqLogger.Out = loggerOutput
-		router.Use(bakaloMiddleware.NewStructuredLogger(reqLogger))
-	} else {
-		router.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger.Log}))
-	}
-	router.Use(middleware.Recoverer)
-	router.Use(render.SetContentType(render.ContentTypeJSON))
+	initMiddlewares(router, env, loggerOutput)
 
 	// handlers
 	boardHandler := handler.NewBoardHandler(services.BoardService)
 	threadHandler := handler.NewThreadHandler(services.ThreadService)
+	postHandler := handler.NewPostHandler(services.PostService)
 
 	router.Route(
 		"/v1", func(r chi.Router) {
@@ -53,14 +40,32 @@ func NewChiRouter(
 			r.Get("/threads", threadHandler.ListThreads)
 			r.Get("/thread/{id:[0-9]+}", threadHandler.GetByID)
 			r.Post("/thread", threadHandler.CreateThreadMultipart)
-		},
-	)
 
-	router.Get(
-		"/ping", func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte("pong"))
+			// post endpoints
+			r.Get("/posts", postHandler.ListPosts)
 		},
 	)
 
 	return router
+}
+
+func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Writer) {
+	router.Use(middleware.RealIP)
+	router.Use(middleware.RequestID)
+
+	// logger middleware
+	if env == config.Production {
+		reqLogger := logrus.New()
+		reqLogger.Formatter = &logrus.JSONFormatter{
+			DisableTimestamp: true,
+		}
+		reqLogger.Out = loggerOutput
+		router.Use(bakaloMiddleware.NewStructuredLogger(reqLogger))
+	} else {
+		router.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger.Log()}))
+	}
+
+	router.Use(middleware.Recoverer)
+	router.Use(render.SetContentType(render.ContentTypeJSON))
+	router.Use(middleware.Heartbeat("/ping"))
 }

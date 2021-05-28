@@ -27,7 +27,7 @@ func NewThreadService(
 func (s threadService) fillOPDetails(ctx context.Context, thread *domain.Thread) error {
 	op, err := s.postService.FindThreadOP(ctx, thread.ID)
 	if err != nil {
-		logger.Log.Warn(err)
+		logger.Log().Warn(err)
 		// if no OP is found, return without OP
 		if errors.Is(err, storage.ErrRecordNotFound) {
 			return nil

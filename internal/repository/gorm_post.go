@@ -21,7 +21,13 @@ func NewGormPostRepository(db *gorm.DB) domain.PostRepository {
 }
 
 func (r gormPostRepository) FindAll(ctx context.Context) ([]domain.Post, error) {
-	panic("implement me")
+	var posts []domain.Post
+	result := r.DB.Find(&posts)
+	err := result.Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func (r gormPostRepository) FindByThreadID(

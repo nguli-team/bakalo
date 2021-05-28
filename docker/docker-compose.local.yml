@@ -1,6 +1,15 @@
 version: "3"
 
 services:
+  media_server:
+    image: halverneus/static-file-server
+    environment:
+      CORS: "false"
+      FOLDER: "/media"
+    volumes:
+      - "../media:/media"
+    ports:
+      - "8081:8080"
   db:
     image: postgres:alpine
     environment:

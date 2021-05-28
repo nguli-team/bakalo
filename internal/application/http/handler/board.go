@@ -15,8 +15,8 @@ type BoardHandler struct {
 	boardService domain.BoardService
 }
 
-func NewBoardHandler(boardService domain.BoardService) BoardHandler {
-	return BoardHandler{
+func NewBoardHandler(boardService domain.BoardService) *BoardHandler {
+	return &BoardHandler{
 		boardService: boardService,
 	}
 }

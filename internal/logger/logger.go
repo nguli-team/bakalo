@@ -1,10 +1,11 @@
 package logger
 
-var Log Logger
+var log Logger
 
 // Logger represent common interface for logging function
 type Logger interface {
 	Errorf(format string, args ...interface{})
+	Error(args ...interface{})
 	Fatalf(format string, args ...interface{})
 	Fatal(args ...interface{})
 	Infof(format string, args ...interface{})
@@ -17,6 +18,10 @@ type Logger interface {
 	Print(args ...interface{})
 }
 
+func Log() Logger {
+	return log
+}
+
 func SetLogger(logger Logger) {
-	Log = logger
+	log = logger
 }

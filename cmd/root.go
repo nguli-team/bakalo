@@ -40,8 +40,8 @@ func Execute() error {
 
 	rootCmd := &cobra.Command{
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			logger.Log.Info("using configuration file: ", cfgFile)
-			logger.Log.Info("running in environment: ", cfg.Env)
+			logger.Log().Info("using configuration file: ", cfgFile)
+			logger.Log().Info("running in environment: ", cfg.Env)
 		},
 	}
 	rootCmd.AddCommand(migrateCmd, serveCmd)

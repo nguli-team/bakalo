@@ -2,12 +2,19 @@ package storage
 
 import (
 	"fmt"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormLogger "gorm.io/gorm/logger"
 
 	"bakalo.li/internal/config"
+	"bakalo.li/internal/logger"
+)
+
+const (
+	maxDBConnRetry = 3
+	retryDelay     = 5
 )
 
 // NewGormPostgres creates a new storage connection with gorm
@@ -22,9 +29,28 @@ func NewGormPostgres(cfg config.DatabaseConfig) (*gorm.DB, error) {
 		cfg.TimeZone,
 	)
 
-	gormConfig := &gorm.Config{Logger: logger.Default.LogMode(logger.Info)}
+	gormConfig := &gorm.Config{
+		Logger: gormLogger.Default.LogMode(gormLogger.Silent),
+	}
 
-	db, err := gorm.Open(postgres.Open(dsn), gormConfig)
+	var db *gorm.DB
+	var err error
+
+	// if error, retry to connect to database
+	for ret := 0; ret < maxDBConnRetry; ret++ {
+		db, err = gorm.Open(postgres.Open(dsn), gormConfig)
+		if err != nil {
+			logger.Log().Errorf(
+				"failed to initialize database, retrying in %ds [%d/%d]: %v",
+				retryDelay,
+				ret+1,
+				maxDBConnRetry,
+				err,
+			)
+			time.Sleep(retryDelay * time.Second)
+		}
+	}
+
 	if err != nil {
 		return nil, err
 	}

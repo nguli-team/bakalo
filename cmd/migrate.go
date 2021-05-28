@@ -20,7 +20,7 @@ func newMigrateCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			err := migrateGorm(cfg, tableOnly)
 			if err != nil {
-				logger.Log.Fatal(err)
+				logger.Log().Fatal(err)
 			}
 		},
 	}
@@ -41,9 +41,9 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 	}
 
 	if tableOnly {
-		logger.Log.Info("starting table only migration")
+		logger.Log().Info("starting table only migration")
 	} else {
-		logger.Log.Info("starting migration")
+		logger.Log().Info("starting migration")
 	}
 
 	// migrate tables
@@ -58,7 +58,7 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 
 	// return early if only creating tables
 	if tableOnly {
-		logger.Log.Info("table migration successful")
+		logger.Log().Info("table migration successful")
 		return nil
 	}
 
@@ -78,6 +78,6 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 		}
 	}
 
-	logger.Log.Info("migration successful")
+	logger.Log().Info("migration successful")
 	return nil
 }

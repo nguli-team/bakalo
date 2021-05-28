@@ -11,11 +11,13 @@ import (
 type ServiceContainer struct {
 	BoardService  domain.BoardService
 	ThreadService domain.ThreadService
+	PostService   domain.PostService
 }
 
 func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	// storages
 	gormDB, err := storage.NewGormPostgres(cfg)
+
 	if err != nil {
 		return nil, err
 	}
@@ -33,5 +35,6 @@ func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	return &ServiceContainer{
 		BoardService:  boardService,
 		ThreadService: threadService,
+		PostService:   postService,
 	}, nil
 }

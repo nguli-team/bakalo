@@ -22,8 +22,8 @@ type ThreadHandler struct {
 	threadService domain.ThreadService
 }
 
-func NewThreadHandler(threadService domain.ThreadService) ThreadHandler {
-	return ThreadHandler{
+func NewThreadHandler(threadService domain.ThreadService) *ThreadHandler {
+	return &ThreadHandler{
 		threadService: threadService,
 	}
 }
@@ -89,7 +89,7 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 	defer func(media multipart.File) {
 		err = media.Close()
 		if err != nil {
-			logger.Log.Warn(err)
+			logger.Log().Warn(err)
 		}
 	}(media)
 
@@ -107,7 +107,7 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 	defer func(dst *os.File) {
 		err = dst.Close()
 		if err != nil {
-			logger.Log.Warn(err)
+			logger.Log().Warn(err)
 		}
 	}(dst)
 

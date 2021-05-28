@@ -19,7 +19,7 @@ type ServeConfig struct {
 func Serve(ctx context.Context, cfg *ServeConfig) {
 	services, err := NewServiceContainer(cfg.Config.Database)
 	if err != nil {
-		logger.Log.Fatal(err)
+		logger.Log().Fatal(err)
 	}
 
 	router := NewChiRouter(cfg.Config.Env, cfg.RequestLoggerOutput, services)
@@ -34,14 +34,14 @@ func Serve(ctx context.Context, cfg *ServeConfig) {
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
-			logger.Log.Fatal(err)
+			logger.Log().Fatal(err)
 		}
 	}()
-	logger.Log.Info("http server is listening at ", addr)
+	logger.Log().Info("http server is listening at ", addr)
 
 	<-ctx.Done()
 
-	logger.Log.Info("stopping http server")
+	logger.Log().Info("stopping http server")
 	ctxShutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -49,7 +49,7 @@ func Serve(ctx context.Context, cfg *ServeConfig) {
 
 	err = srv.Shutdown(ctxShutdown)
 	if err != nil {
-		logger.Log.Fatal(err)
+		logger.Log().Fatal(err)
 	}
-	logger.Log.Info("http server stopped properly")
+	logger.Log().Info("http server stopped properly")
 }

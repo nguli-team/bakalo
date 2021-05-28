@@ -29,7 +29,11 @@ func NewPostService(
 }
 
 func (s postService) FindAll(ctx context.Context) ([]domain.Post, error) {
-	panic("implement me")
+	posts, err := s.postRepository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func (s postService) FindByThreadID(ctx context.Context, threadID uint32) ([]domain.Post, error) {
