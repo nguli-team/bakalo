@@ -1,11 +1,13 @@
 package storage
 
 import (
-	"bakalo.li/internal/config"
 	"fmt"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"bakalo.li/internal/config"
 )
 
 // NewGormPostgres creates a new storage connection with gorm

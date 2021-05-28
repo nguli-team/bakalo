@@ -1,9 +1,10 @@
 package response
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
-	"net/http"
 )
 
 type ErrResponse struct {

@@ -20,14 +20,15 @@ func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 		return nil, err
 	}
 
-	// services
+	// repositories
 	boardRepository := repository.NewGormBoardRepository(gormDB)
 	threadRepository := repository.NewGormThreadRepository(gormDB)
 	postRepository := repository.NewGormPostRepository(gormDB)
 
-	// repositories
+	// services
 	boardService := service.NewBoardService(boardRepository)
-	threadService := service.NewThreadService(threadRepository, postRepository)
+	postService := service.NewPostService(postRepository, boardRepository, threadRepository)
+	threadService := service.NewThreadService(threadRepository, postService)
 
 	return &ServiceContainer{
 		BoardService:  boardService,

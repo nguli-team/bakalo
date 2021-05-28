@@ -1,19 +1,25 @@
 package http
 
 import (
-	"bakalo.li/internal/application/http/handler"
-	bakaloMiddleware "bakalo.li/internal/application/http/middleware"
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/logger"
+	"io"
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"github.com/sirupsen/logrus"
-	"io"
-	"net/http"
+
+	"bakalo.li/internal/application/http/handler"
+	bakaloMiddleware "bakalo.li/internal/application/http/middleware"
+	"bakalo.li/internal/config"
+	"bakalo.li/internal/logger"
 )
 
-func NewChiRouter(env config.Environment, loggerOutput io.Writer, services *ServiceContainer) *chi.Mux {
+func NewChiRouter(
+	env config.Environment,
+	loggerOutput io.Writer,
+	services *ServiceContainer,
+) *chi.Mux {
 	router := chi.NewRouter()
 
 	// middlewares
@@ -36,17 +42,25 @@ func NewChiRouter(env config.Environment, loggerOutput io.Writer, services *Serv
 	boardHandler := handler.NewBoardHandler(services.BoardService)
 	threadHandler := handler.NewThreadHandler(services.ThreadService)
 
-	router.Route("/v1", func(r chi.Router) {
-		r.Get("/boards", boardHandler.ListBoards)
-		r.Get("/board/{id:[0-9]+}", boardHandler.GetByID)
-		r.Get("/board/{shorthand:[a-z]+}", boardHandler.GetByShorthand)
-		r.Get("/threads", threadHandler.ListThreads)
-		r.Post("/thread", threadHandler.CreateThreadMultipart)
-	})
+	router.Route(
+		"/v1", func(r chi.Router) {
+			// board endpoints
+			r.Get("/boards", boardHandler.ListBoards)
+			r.Get("/board/{id:[0-9]+}", boardHandler.GetByID)
+			r.Get("/board/{shorthand:[a-z]+}", boardHandler.GetByShorthand)
 
-	router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("pong"))
-	})
+			// thread endpoints
+			r.Get("/threads", threadHandler.ListThreads)
+			r.Get("/thread/{id:[0-9]+}", threadHandler.GetByID)
+			r.Post("/thread", threadHandler.CreateThreadMultipart)
+		},
+	)
+
+	router.Get(
+		"/ping", func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("pong"))
+		},
+	)
 
 	return router
 }

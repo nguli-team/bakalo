@@ -1,18 +1,21 @@
 package handler
 
 import (
-	"bakalo.li/internal/application/http/response"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/logger"
-	"bakalo.li/internal/util"
 	"fmt"
-	"github.com/go-chi/render"
 	"io"
 	"mime/multipart"
 	"net"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/go-chi/render"
+
+	"bakalo.li/internal/application/http/response"
+	"bakalo.li/internal/domain"
+	"bakalo.li/internal/logger"
+	"bakalo.li/internal/storage"
+	"bakalo.li/internal/util"
 )
 
 type ThreadHandler struct {
@@ -33,6 +36,34 @@ func (h ThreadHandler) ListThreads(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = render.RenderList(w, r, response.NewThreadListResponse(threads))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrRender(err))
+		return
+	}
+}
+
+func (h ThreadHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id, err := fetchIDFromParam(r)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+
+	thread, err := h.threadService.FindByID(ctx, id)
+	if err != nil {
+		switch err {
+		case storage.ErrRecordNotFound:
+			_ = render.Render(w, r, response.ErrNotFound())
+			break
+		default:
+			_ = render.Render(w, r, response.ErrInternal(err))
+		}
+		return
+	}
+
+	err = render.Render(w, r, response.NewThreadResponse(thread))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))
 		return

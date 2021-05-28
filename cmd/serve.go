@@ -1,11 +1,13 @@
 package cmd
 
 import (
-	bakaloHttp "bakalo.li/internal/application/http"
 	"context"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
+
+	"github.com/spf13/cobra"
+
+	bakaloHttp "bakalo.li/internal/application/http"
 )
 
 func newServeCmd() *cobra.Command {
@@ -19,10 +21,12 @@ func newServeCmd() *cobra.Command {
 				<-c
 				cancel()
 			}()
-			bakaloHttp.Serve(ctx, &bakaloHttp.ServeConfig{
-				Config:              cfg,
-				RequestLoggerOutput: os.Stdout,
-			})
+			bakaloHttp.Serve(
+				ctx, &bakaloHttp.ServeConfig{
+					Config:              cfg,
+					RequestLoggerOutput: os.Stdout,
+				},
+			)
 		},
 	}
 	return serveCmd

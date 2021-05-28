@@ -15,13 +15,14 @@ type Board struct {
 }
 
 type BoardService interface {
-	FindAll(ctx context.Context) ([]*Board, error)
+	FindAll(ctx context.Context) ([]Board, error)
 	FindByID(ctx context.Context, id uint32) (*Board, error)
 	FindByShorthand(ctx context.Context, shorthand string) (*Board, error)
+	Update(ctx context.Context, board *Board) (*Board, error)
 }
 
 type BoardRepository interface {
-	FindAll(ctx context.Context) ([]*Board, error)
+	FindAll(ctx context.Context) ([]Board, error)
 	FindByID(ctx context.Context, id uint32) (*Board, error)
 	FindByShorthand(ctx context.Context, shorthand string) (*Board, error)
 	Create(ctx context.Context, board *Board) (*Board, error)

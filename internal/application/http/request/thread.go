@@ -1,10 +1,11 @@
 package request
 
 import (
-	"bakalo.li/internal/domain"
 	"errors"
 	"net"
 	"net/http"
+
+	"bakalo.li/internal/domain"
 )
 
 type ThreadCreateRequest struct {

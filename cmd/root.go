@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"os"
+
+	"github.com/spf13/cobra"
+
 	"bakalo.li/internal/config"
 	"bakalo.li/internal/logger"
-	"github.com/spf13/cobra"
-	"os"
 )
 
 var (

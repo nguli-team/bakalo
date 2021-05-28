@@ -1,13 +1,14 @@
 package http
 
 import (
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/logger"
 	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+
+	"bakalo.li/internal/config"
+	"bakalo.li/internal/logger"
 )
 
 type ServeConfig struct {

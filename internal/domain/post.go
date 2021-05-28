@@ -15,18 +15,16 @@ type Post struct {
 	UpdatedAt     uint32 `json:"updated_at"`
 }
 
-type PostVM struct {
-	*Post
-}
-
 type PostService interface {
-	FindAll(ctx context.Context) ([]*Post, error)
+	FindAll(ctx context.Context) ([]Post, error)
+	FindByThreadID(ctx context.Context, threadID uint32) ([]Post, error)
 	FindThreadOP(ctx context.Context, threadID uint32) (*Post, error)
+	Create(ctx context.Context, post *Post) (*Post, error)
 }
 
 type PostRepository interface {
-	FindAll(ctx context.Context) ([]*Post, error)
-	FindByThreadID(ctx context.Context, threadID uint32) ([]*Post, error)
+	FindAll(ctx context.Context) ([]Post, error)
+	FindByThreadID(ctx context.Context, threadID uint32) ([]Post, error)
 	FindByID(ctx context.Context, id uint32) (*Post, error)
 	FindThreadOP(ctx context.Context, threadID uint32) (*Post, error)
 	Create(ctx context.Context, post *Post) (*Post, error)

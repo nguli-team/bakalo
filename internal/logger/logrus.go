@@ -1,9 +1,11 @@
 package logger
 
 import (
-	"bakalo.li/internal/config"
-	"github.com/sirupsen/logrus"
 	"io"
+
+	"github.com/sirupsen/logrus"
+
+	"bakalo.li/internal/config"
 )
 
 func NewLogrusLogger(env config.Environment, output io.Writer) (Logger, error) {

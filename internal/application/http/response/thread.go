@@ -1,9 +1,11 @@
 package response
 
 import (
-	"bakalo.li/internal/domain"
-	"github.com/go-chi/render"
 	"net/http"
+
+	"github.com/go-chi/render"
+
+	"bakalo.li/internal/domain"
 )
 
 type ThreadResponse struct {
@@ -20,10 +22,10 @@ func (rd *ThreadResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func NewThreadListResponse(threads []*domain.Thread) []render.Renderer {
+func NewThreadListResponse(threads []domain.Thread) []render.Renderer {
 	var list []render.Renderer
 	for _, thread := range threads {
-		list = append(list, NewThreadResponse(thread))
+		list = append(list, NewThreadResponse(&thread))
 	}
 	return list
 }

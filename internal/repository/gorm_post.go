@@ -1,11 +1,13 @@
 package repository
 
 import (
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/storage"
 	"context"
 	"errors"
+
 	"gorm.io/gorm"
+
+	"bakalo.li/internal/domain"
+	"bakalo.li/internal/storage"
 )
 
 type gormPostRepository struct {
@@ -18,24 +20,36 @@ func NewGormPostRepository(db *gorm.DB) domain.PostRepository {
 	}
 }
 
-func (r gormPostRepository) FindAll(ctx context.Context) ([]*domain.Post, error) {
+func (r gormPostRepository) FindAll(ctx context.Context) ([]domain.Post, error) {
 	panic("implement me")
 }
 
-func (r gormPostRepository) FindByThreadID(ctx context.Context, threadID uint32) ([]*domain.Post, error) {
-	panic("implement me")
+func (r gormPostRepository) FindByThreadID(
+	ctx context.Context,
+	threadID uint32,
+) ([]domain.Post, error) {
+	var posts []domain.Post
+	result := r.DB.Where(&domain.Post{ThreadID: threadID}).Find(&posts)
+	err := result.Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func (r gormPostRepository) FindByID(ctx context.Context, id uint32) (*domain.Post, error) {
 	panic("implement me")
 }
 
-func (r gormPostRepository) FindThreadOP(ctx context.Context, threadID uint32) (*domain.Post, error) {
+func (r gormPostRepository) FindThreadOP(
+	ctx context.Context,
+	threadID uint32,
+) (*domain.Post, error) {
 	var post *domain.Post
 	result := r.DB.Where(&domain.Post{ThreadID: threadID}).Last(&post)
 	err := result.Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, storage.ErrRecordNotFound
 		}
 		return nil, err

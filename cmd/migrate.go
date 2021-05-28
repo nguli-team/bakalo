@@ -1,13 +1,15 @@
 package cmd
 
 import (
+	"context"
+
+	"github.com/spf13/cobra"
+
 	"bakalo.li/internal/config"
 	"bakalo.li/internal/domain"
 	"bakalo.li/internal/logger"
 	"bakalo.li/internal/repository"
 	"bakalo.li/internal/storage"
-	"context"
-	"github.com/spf13/cobra"
 )
 
 var tableOnly bool
@@ -64,11 +66,13 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 	boardRepo := repository.NewGormBoardRepository(db)
 	for _, b := range cfg.App.Boards {
 		ctx := context.TODO()
-		_, err = boardRepo.Create(ctx, &domain.Board{
-			Shorthand:   b.Shorthand,
-			Name:        b.Name,
-			Description: b.Description,
-		})
+		_, err = boardRepo.Create(
+			ctx, &domain.Board{
+				Shorthand:   b.Shorthand,
+				Name:        b.Name,
+				Description: b.Description,
+			},
+		)
 		if err != nil {
 			return err
 		}
