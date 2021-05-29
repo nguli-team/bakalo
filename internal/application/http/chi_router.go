@@ -67,6 +67,7 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 	)
 
 	router.Use(middleware.RealIP)
+	router.Use(bakaloMiddleware.RequestIP)
 	router.Use(middleware.RequestID)
 
 	// logger middleware

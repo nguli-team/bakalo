@@ -27,6 +27,9 @@ func NewConfig(filename string) (config Config, err error) {
 		return
 	}
 
+	// TODO: move recaptcha config init
+	config.App.Recaptcha.Secret = "6LeogPkaAAAAANvMlB0t5KCoYowah14gxQemUU-E"
+
 	err = config.checkConfig()
 	if err != nil {
 		return

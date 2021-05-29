@@ -44,7 +44,7 @@ func (h BoardHandler) ListBoards(w http.ResponseWriter, r *http.Request) {
 func (h BoardHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	id, err := fetchIDFromParam(r)
+	id, err := FetchIDFromParam(r, "id")
 	if err != nil {
 		_ = render.Render(w, r, response.ErrInvalidRequest(err))
 		return

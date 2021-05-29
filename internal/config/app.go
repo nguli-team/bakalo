@@ -1,7 +1,8 @@
 package config
 
 type AppConfig struct {
-	Boards map[string]BoardConfig `mapstructure:"boards"`
+	Boards    map[string]BoardConfig `mapstructure:"boards"`
+	Recaptcha RecaptchaConfig
 }
 
 // BoardConfig contains storage connection configuration for relational storage

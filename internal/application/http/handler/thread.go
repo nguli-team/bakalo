@@ -2,19 +2,14 @@ package handler
 
 import (
 	"errors"
-	"fmt"
-	"io"
-	"mime/multipart"
-	"net"
 	"net/http"
-	"os"
-	"strconv"
 
 	"github.com/go-chi/render"
 
+	"bakalo.li/internal/application/http/middleware"
+	"bakalo.li/internal/application/http/request/media"
 	"bakalo.li/internal/application/http/response"
 	"bakalo.li/internal/domain"
-	"bakalo.li/internal/logger"
 	"bakalo.li/internal/storage"
 	"bakalo.li/internal/util"
 )
@@ -70,7 +65,7 @@ func (h ThreadHandler) ListThreads(w http.ResponseWriter, r *http.Request) {
 func (h ThreadHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	id, err := fetchIDFromParam(r)
+	id, err := FetchIDFromParam(r, "id")
 	if err != nil {
 		_ = render.Render(w, r, response.ErrInvalidRequest(err))
 		return
@@ -96,7 +91,6 @@ func (h ThreadHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Request) {
-	// FIXME: Ya Allah! what have I done
 	ctx := r.Context()
 
 	err := r.ParseMultipartForm(5 << 20) // max size: 5MB
@@ -105,62 +99,38 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// handle media upload
-	media, mediaHeader, err := r.FormFile("media")
-	if err != nil {
-		_ = render.Render(w, r, response.ErrInvalidRequest(err))
-		return
-	}
-	defer func(media multipart.File) {
-		err = media.Close()
-		if err != nil {
-			logger.Log().Warn(err)
-		}
-	}(media)
-
-	namePrefix := util.RandomAlphaNumString(6)
-	if err != nil {
-		_ = render.Render(w, r, response.ErrInternal(err))
-		return
-	}
-	filename := fmt.Sprintf("%s-%s", namePrefix, mediaHeader.Filename)
-	dst, err := os.Create("media/" + filename)
-	if err != nil {
-		_ = render.Render(w, r, response.ErrInternal(err))
-		return
-	}
-	defer func(dst *os.File) {
-		err = dst.Close()
-		if err != nil {
-			logger.Log().Warn(err)
-		}
-	}(dst)
-
-	_, err = io.Copy(dst, media)
-	if err != nil {
-		_ = render.Render(w, r, response.ErrInternal(err))
-		return
-	}
-
 	// parse request body
-	boardIDStr := r.PostFormValue("board_id")
-	boardID, err := strconv.ParseUint(boardIDStr, 10, 32)
+	boardID, err := util.StrToUint32(r.PostFormValue("board_id"))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrInvalidRequest(err))
 		return
 	}
 	title := r.PostFormValue("title")
-	opName := r.PostFormValue("name")
+	if title != "" {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
 	opText := r.PostFormValue("text")
+	opName := r.PostFormValue("name")
+	ip := middleware.GetRequestIP(ctx)
 
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	// handle media upload
+	filename, err := media.HandleUpload(r, "media")
 	if err != nil {
+		switch err {
+		case media.ErrFileNotSupported:
+		case media.ErrFileInvalid:
+			_ = render.Render(w, r, response.ErrInvalidRequest(err))
+			break
+		default:
+			_ = render.Render(w, r, response.ErrInternal(err))
+		}
 		_ = render.Render(w, r, response.ErrInternal(err))
 		return
 	}
 
 	threadRequest := &domain.Thread{
-		BoardID: uint32(boardID),
+		BoardID: boardID,
 		Title:   title,
 		OP: &domain.Post{
 			Name:          opName,

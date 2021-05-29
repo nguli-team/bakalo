@@ -17,6 +17,7 @@ func NewLogrusLogger(env config.Environment, output io.Writer) (Logger, error) {
 		log.Formatter = &logrus.TextFormatter{
 			PadLevelText: true,
 		}
+		log.SetLevel(logrus.DebugLevel)
 	}
 
 	log.SetOutput(output)

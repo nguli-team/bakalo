@@ -9,8 +9,8 @@ import (
 	"bakalo.li/internal/util"
 )
 
-func fetchIDFromParam(r *http.Request) (uint32, error) {
-	idParam := chi.URLParam(r, "id")
+func FetchIDFromParam(r *http.Request, key string) (uint32, error) {
+	idParam := chi.URLParam(r, key)
 	if idParam != "" {
 		id, err := util.StrToUint32(idParam)
 		if err != nil {
