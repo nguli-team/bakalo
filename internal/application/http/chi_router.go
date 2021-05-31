@@ -30,6 +30,7 @@ func NewChiRouter(
 	boardHandler := handler.NewBoardHandler(services.BoardService)
 	threadHandler := handler.NewThreadHandler(services.ThreadService)
 	postHandler := handler.NewPostHandler(services.PostService)
+	vipHandler := handler.VIPHandler{}
 
 	router.Route(
 		"/v1", func(r chi.Router) {
@@ -46,6 +47,9 @@ func NewChiRouter(
 			// post endpoints
 			r.Get("/posts", postHandler.ListPosts)
 			r.Post("/post", postHandler.CreatePostMultipart)
+
+			r.Post("/vip", vipHandler.CreateToken)
+			r.Post("/vip/login", vipHandler.Login)
 		},
 	)
 

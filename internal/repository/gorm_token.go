@@ -37,6 +37,24 @@ func (r gormTokenRepository) FindByIP(ctx context.Context, ip string) (*domain.V
 	return token, nil
 }
 
+func (r gormTokenRepository) FindByToken(ctx context.Context, token string) (*domain.VIPToken, error) {
+	var tok *domain.VIPToken
+
+	result := r.DB.Where(&domain.VIPToken{Token: token}).First(&tok)
+
+	err := result.Error
+	if err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return nil, storage.ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return tok, nil
+}
+
 func (r gormTokenRepository) Create(ctx context.Context, token *domain.VIPToken) (*domain.VIPToken, error) {
 	result := r.DB.Create(token)
 

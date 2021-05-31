@@ -118,11 +118,6 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	opName := r.PostFormValue("name")
-	if opName == "" {
-		err := errors.New("'name' is missing")
-		_ = render.Render(w, r, response.ErrInvalidRequest(err))
-		return
-	}
 	ip := middleware.GetRequestIP(ctx)
 
 	// handle media upload
