@@ -4,7 +4,7 @@ DOCKER_DIR = "docker"
 
 setup-dev:
 	go get -v ./...
-	[[ -d media ]] || mkdir media
+	[ -d media ] || mkdir media
 	docker-compose -f ${DOCKER_DIR}/docker-compose.local.yml pull
 
 clean:

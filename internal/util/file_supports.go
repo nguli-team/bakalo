@@ -2,6 +2,7 @@ package util
 
 import (
 	"io"
+	"mime/multipart"
 
 	"github.com/gabriel-vasile/mimetype"
 )
@@ -12,8 +13,9 @@ var SupportedMediaMIMEs = []string{
 	"image/gif",
 }
 
-func IsMediaSupported(r io.Reader) bool {
+func IsMediaSupported(r multipart.File) bool {
 	mtype, err := mimetype.DetectReader(r)
+	_, _ = r.Seek(0, io.SeekStart)
 	if err != nil {
 		return false
 	}
