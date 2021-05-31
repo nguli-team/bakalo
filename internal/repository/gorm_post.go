@@ -52,7 +52,7 @@ func (r gormPostRepository) FindThreadOP(
 	threadID uint32,
 ) (*domain.Post, error) {
 	var post *domain.Post
-	result := r.DB.Where(&domain.Post{ThreadID: threadID}).Last(&post)
+	result := r.DB.Where(&domain.Post{ThreadID: threadID}).First(&post)
 	err := result.Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
