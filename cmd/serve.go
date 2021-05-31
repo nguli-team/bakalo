@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	bakaloHttp "bakalo.li/internal/application/http"
+	bakaloHttp "github.com/nguli-team/bakalo/internal/application/http"
 )
 
 func newServeCmd() *cobra.Command {

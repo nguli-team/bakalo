@@ -6,12 +6,12 @@ import (
 
 	"github.com/go-chi/render"
 
-	"bakalo.li/internal/application/http/middleware"
-	"bakalo.li/internal/application/http/request/media"
-	"bakalo.li/internal/application/http/response"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/storage"
-	"bakalo.li/internal/util"
+	"github.com/nguli-team/bakalo/internal/application/http/middleware"
+	"github.com/nguli-team/bakalo/internal/application/http/request/media"
+	"github.com/nguli-team/bakalo/internal/application/http/response"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/storage"
+	"github.com/nguli-team/bakalo/internal/util"
 )
 
 type ThreadHandler struct {
@@ -106,12 +106,23 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	title := r.PostFormValue("title")
-	if title != "" {
+	if title == "" {
+		err := errors.New("'title' is missing")
 		_ = render.Render(w, r, response.ErrInvalidRequest(err))
 		return
 	}
 	opText := r.PostFormValue("text")
+	if opText == "" {
+		err := errors.New("'text' is missing")
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
 	opName := r.PostFormValue("name")
+	if opName == "" {
+		err := errors.New("'name' is missing")
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
 	ip := middleware.GetRequestIP(ctx)
 
 	// handle media upload
@@ -125,7 +136,6 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 		default:
 			_ = render.Render(w, r, response.ErrInternal(err))
 		}
-		_ = render.Render(w, r, response.ErrInternal(err))
 		return
 	}
 

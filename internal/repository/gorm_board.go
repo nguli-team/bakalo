@@ -5,8 +5,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/storage"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/storage"
 )
 
 type gormBoardRepository struct {

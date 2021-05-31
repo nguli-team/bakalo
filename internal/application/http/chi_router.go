@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	chiMiddleware "github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/sirupsen/logrus"
 
-	"bakalo.li/internal/application/http/handler"
-	bakaloMiddleware "bakalo.li/internal/application/http/middleware"
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/logger"
+	"github.com/nguli-team/bakalo/internal/application/http/handler"
+	"github.com/nguli-team/bakalo/internal/application/http/middleware"
+	"github.com/nguli-team/bakalo/internal/config"
+	"github.com/nguli-team/bakalo/internal/logger"
 )
 
 func NewChiRouter(
@@ -45,6 +45,7 @@ func NewChiRouter(
 
 			// post endpoints
 			r.Get("/posts", postHandler.ListPosts)
+			r.Post("/post", postHandler.CreatePostMultipart)
 		},
 	)
 
@@ -66,23 +67,25 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 		),
 	)
 
-	router.Use(middleware.RealIP)
-	router.Use(bakaloMiddleware.RequestIP)
-	router.Use(middleware.RequestID)
+	router.Use(chiMiddleware.RealIP)
+	router.Use(middleware.RequestIP)
+	router.Use(chiMiddleware.RequestID)
 
-	// logger middleware
+	// logger chiMiddleware
 	if env == config.Production {
 		reqLogger := logrus.New()
 		reqLogger.Formatter = &logrus.JSONFormatter{
 			DisableTimestamp: true,
 		}
 		reqLogger.Out = loggerOutput
-		router.Use(bakaloMiddleware.NewStructuredLogger(reqLogger))
+		router.Use(middleware.NewStructuredLogger(reqLogger))
 	} else {
-		router.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: logger.Log()}))
+		router.Use(
+			chiMiddleware.RequestLogger(&chiMiddleware.DefaultLogFormatter{Logger: logger.Log()}),
+		)
 	}
 
-	router.Use(middleware.Recoverer)
+	router.Use(chiMiddleware.Recoverer)
 	router.Use(render.SetContentType(render.ContentTypeJSON))
-	router.Use(middleware.Heartbeat("/ping"))
+	router.Use(chiMiddleware.Heartbeat("/ping"))
 }

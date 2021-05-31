@@ -6,9 +6,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"bakalo.li/internal/application/http/response"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/storage"
+	"github.com/nguli-team/bakalo/internal/application/http/response"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/storage"
 )
 
 type BoardHandler struct {

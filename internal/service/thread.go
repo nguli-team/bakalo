@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/logger"
-	"bakalo.li/internal/storage"
-	"bakalo.li/internal/storage/cache"
-	"bakalo.li/internal/util"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/logger"
+	"github.com/nguli-team/bakalo/internal/storage"
+	"github.com/nguli-team/bakalo/internal/storage/cache"
+	"github.com/nguli-team/bakalo/internal/util"
 )
 
 type threadService struct {

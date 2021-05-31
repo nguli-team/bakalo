@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/logger"
+	"github.com/nguli-team/bakalo/internal/config"
+	"github.com/nguli-team/bakalo/internal/logger"
 )
 
 var (

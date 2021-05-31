@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-chi/render"
 
-	"bakalo.li/internal/application/http/response"
-	"bakalo.li/internal/logger"
+	"github.com/nguli-team/bakalo/internal/application/http/response"
+	"github.com/nguli-team/bakalo/internal/logger"
 )
 
 var IPContextKey = "request-ip"

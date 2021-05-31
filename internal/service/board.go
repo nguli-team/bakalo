@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/storage/cache"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/storage/cache"
 )
 
 type boardService struct {

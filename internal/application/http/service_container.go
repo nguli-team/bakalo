@@ -1,12 +1,12 @@
 package http
 
 import (
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/repository"
-	"bakalo.li/internal/service"
-	"bakalo.li/internal/storage/cache"
-	"bakalo.li/internal/storage/persistence"
+	"github.com/nguli-team/bakalo/internal/config"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/repository"
+	"github.com/nguli-team/bakalo/internal/service"
+	"github.com/nguli-team/bakalo/internal/storage/cache"
+	"github.com/nguli-team/bakalo/internal/storage/persistence"
 )
 
 type ServiceContainer struct {
@@ -18,11 +18,10 @@ type ServiceContainer struct {
 func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 	// storages
 	gormDB, err := persistence.NewGormPostgres(cfg)
-	goCache := cache.NewGoCache()
-
 	if err != nil {
 		return nil, err
 	}
+	goCache := cache.NewGoCache()
 
 	// repositories
 	boardRepository := repository.NewGormBoardRepository(gormDB)

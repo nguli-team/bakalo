@@ -5,11 +5,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/logger"
-	"bakalo.li/internal/repository"
-	"bakalo.li/internal/storage/persistence"
+	"github.com/nguli-team/bakalo/internal/config"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/logger"
+	"github.com/nguli-team/bakalo/internal/repository"
+	"github.com/nguli-team/bakalo/internal/storage/persistence"
 )
 
 var tableOnly bool

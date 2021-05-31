@@ -6,9 +6,11 @@ import (
 
 	"github.com/go-chi/render"
 
-	"bakalo.li/internal/application/http/response"
-	"bakalo.li/internal/domain"
-	"bakalo.li/internal/util"
+	"github.com/nguli-team/bakalo/internal/application/http/middleware"
+	"github.com/nguli-team/bakalo/internal/application/http/request/media"
+	"github.com/nguli-team/bakalo/internal/application/http/response"
+	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/util"
 )
 
 type PostHandler struct {
@@ -53,6 +55,72 @@ func (h PostHandler) ListPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = render.RenderList(w, r, response.NewPostListResponse(posts))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrRender(err))
+		return
+	}
+}
+
+func (h PostHandler) CreatePostMultipart(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	err := r.ParseMultipartForm(5 << 20) // max size: 5MB
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+
+	// parse request body
+	threadID, err := util.StrToUint32(r.PostFormValue("thread_id"))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+	opText := r.PostFormValue("text")
+	if opText == "" {
+		err := errors.New("'text' is missing")
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+	opName := r.PostFormValue("name")
+	if opName == "" {
+		err := errors.New("'name' is missing")
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+	ip := middleware.GetRequestIP(ctx)
+
+	// handle media upload
+	filename, err := media.HandleUpload(r, "media")
+	if err != nil {
+		switch err {
+		case media.ErrFileInvalid:
+			break
+		case media.ErrFileNotSupported:
+			_ = render.Render(w, r, response.ErrInvalidRequest(err))
+			return
+		default:
+			_ = render.Render(w, r, response.ErrInternal(err))
+			return
+		}
+	}
+
+	postRequest := &domain.Post{
+		ThreadID:      threadID,
+		Name:          opName,
+		Text:          opText,
+		MediaFileName: filename,
+		IPv4:          ip,
+	}
+
+	// save thread
+	post, err := h.postService.Create(ctx, postRequest)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInternal(err))
+		return
+	}
+
+	err = render.Render(w, r, response.NewPostResponse(post))
 	if err != nil {
 		_ = render.Render(w, r, response.ErrRender(err))
 		return

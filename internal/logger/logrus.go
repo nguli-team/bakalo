@@ -5,7 +5,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"bakalo.li/internal/config"
+	"github.com/nguli-team/bakalo/internal/config"
 )
 
 func NewLogrusLogger(env config.Environment, output io.Writer) (Logger, error) {

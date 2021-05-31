@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	"bakalo.li/internal/domain"
+	"github.com/nguli-team/bakalo/internal/domain"
 )
 
 type PostResponse struct {

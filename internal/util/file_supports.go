@@ -1,7 +1,9 @@
 package util
 
 import (
-	"github.com/h2non/filetype"
+	"io"
+
+	"github.com/gabriel-vasile/mimetype"
 )
 
 var SupportedMediaMIMEs = []string{
@@ -10,11 +12,10 @@ var SupportedMediaMIMEs = []string{
 	"image/gif",
 }
 
-func IsMediaSupported(buf []byte) bool {
-	for _, mime := range SupportedMediaMIMEs {
-		if filetype.IsMIME(buf, mime) {
-			return true
-		}
+func IsMediaSupported(r io.Reader) bool {
+	mtype, err := mimetype.DetectReader(r)
+	if err != nil {
+		return false
 	}
-	return false
+	return mimetype.EqualsAny(mtype.String(), SupportedMediaMIMEs...)
 }

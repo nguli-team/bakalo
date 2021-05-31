@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"bakalo.li/internal/util"
+	"github.com/nguli-team/bakalo/internal/util"
 )
 
 func FetchIDFromParam(r *http.Request, key string) (uint32, error) {

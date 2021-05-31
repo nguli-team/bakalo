@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 
-	"bakalo.li/internal/config"
-	"bakalo.li/internal/logger"
+	"github.com/nguli-team/bakalo/internal/config"
+	"github.com/nguli-team/bakalo/internal/logger"
 )
 
 const (
