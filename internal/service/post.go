@@ -119,14 +119,14 @@ func (s postService) Create(ctx context.Context, post *domain.Post) (*domain.Pos
 	post.PosterID = s.getPosterID(post.ThreadID, post.IPv4)
 	post.Ref = newBoardRef
 
-	// save the post
-	post, err = s.postRepository.Create(ctx, post)
+	// update poster and media count
+	err = s.updateThreadInfo(ctx, post, thread, createPost)
 	if err != nil {
 		return nil, err
 	}
 
-	// update poster and media count
-	err = s.updateThreadInfo(ctx, post, thread, createPost)
+	// save the post
+	post, err = s.postRepository.Create(ctx, post)
 	if err != nil {
 		return nil, err
 	}
@@ -152,16 +152,16 @@ func (s postService) Delete(ctx context.Context, id uint32) error {
 		return err
 	}
 
+	err = s.updateThreadInfo(ctx, post, thread, deletePost)
+	if err != nil {
+		return err
+	}
+
 	// invalidate caches
 	s.cacheStorage.Delete(cache.AllPostsKey)
 	s.cacheStorage.Delete(cache.ThreadPostsKeyPrefix + util.Uint32ToStr(thread.ID))
 
 	_ = s.postRepository.Delete(ctx, id)
-
-	err = s.updateThreadInfo(ctx, post, thread, deletePost)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
