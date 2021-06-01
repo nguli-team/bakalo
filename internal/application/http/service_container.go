@@ -13,22 +13,25 @@ type ServiceContainer struct {
 	BoardService  domain.BoardService
 	ThreadService domain.ThreadService
 	PostService   domain.PostService
+	TokenService  domain.TokenService
 }
 
-func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
+func NewServiceContainer(dbCfg config.DatabaseConfig, smtpCfg config.SMTPConfig) (*ServiceContainer, error) {
 	// storages
-	gormDB, err := persistence.NewGormPostgres(cfg)
+	gormDB, err := persistence.NewGormPostgres(dbCfg)
 	if err != nil {
 		return nil, err
 	}
 	goCache := cache.NewGoCache()
 
 	// repositories
+	tokenRepository := repository.NewGormTokenRepository(gormDB)
 	boardRepository := repository.NewGormBoardRepository(gormDB)
 	threadRepository := repository.NewGormThreadRepository(gormDB)
 	postRepository := repository.NewGormPostRepository(gormDB)
 
 	// services
+	tokenService := service.NewTokenService(tokenRepository, smtpCfg)
 	boardService := service.NewBoardService(boardRepository, goCache)
 	postService := service.NewPostService(postRepository, boardRepository, threadRepository, goCache)
 	threadService := service.NewThreadService(threadRepository, postService, goCache)
@@ -37,5 +40,6 @@ func NewServiceContainer(cfg config.DatabaseConfig) (*ServiceContainer, error) {
 		BoardService:  boardService,
 		ThreadService: threadService,
 		PostService:   postService,
+		TokenService:  tokenService,
 	}, nil
 }

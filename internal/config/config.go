@@ -10,6 +10,7 @@ type Config struct {
 	Server   HTTPServerConfig `mapstructure:"server"`
 	Database DatabaseConfig   `mapstructure:"database"`
 	App      AppConfig        `mapstructure:"app"`
+	SMTP     SMTPConfig       `mapstructure:"smtp"`
 }
 
 // NewConfig creates new configuration struct from YAML file.

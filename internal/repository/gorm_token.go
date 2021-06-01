@@ -19,10 +19,10 @@ func NewGormTokenRepository(db *gorm.DB) domain.TokenRepository {
 	}
 }
 
-func (r gormTokenRepository) FindByIP(ctx context.Context, ip string) (*domain.VIPToken, error) {
-	var token *domain.VIPToken
+func (r gormTokenRepository) FindByIP(ctx context.Context, ip string) (*domain.VipToken, error) {
+	var token *domain.VipToken
 
-	result := r.DB.Where(&domain.VIPToken{IP: ip}).First(&token)
+	result := r.DB.Where(&domain.VipToken{IP: ip}).First(&token)
 
 	err := result.Error
 	if err != nil {
@@ -37,10 +37,10 @@ func (r gormTokenRepository) FindByIP(ctx context.Context, ip string) (*domain.V
 	return token, nil
 }
 
-func (r gormTokenRepository) FindByToken(ctx context.Context, token string) (*domain.VIPToken, error) {
-	var tok *domain.VIPToken
+func (r gormTokenRepository) FindByToken(ctx context.Context, token string) (*domain.VipToken, error) {
+	var tok *domain.VipToken
 
-	result := r.DB.Where(&domain.VIPToken{Token: token}).First(&tok)
+	result := r.DB.Where(&domain.VipToken{Token: token}).First(&tok)
 
 	err := result.Error
 	if err != nil {
@@ -55,8 +55,8 @@ func (r gormTokenRepository) FindByToken(ctx context.Context, token string) (*do
 	return tok, nil
 }
 
-func (r gormTokenRepository) Create(ctx context.Context, token *domain.VIPToken) (*domain.VIPToken, error) {
-	result := r.DB.Create(token)
+func (r gormTokenRepository) Create(ctx context.Context, token *domain.VipToken) (*domain.VipToken, error) {
+	result := r.DB.Create(&token)
 
 	err := result.Error
 	if err != nil {
@@ -66,8 +66,8 @@ func (r gormTokenRepository) Create(ctx context.Context, token *domain.VIPToken)
 	return token, nil
 }
 
-func (r gormTokenRepository) Update(ctx context.Context, token *domain.VIPToken) (*domain.VIPToken, error) {
-	result := r.DB.Updates(token)
+func (r gormTokenRepository) Update(ctx context.Context, token *domain.VipToken) (*domain.VipToken, error) {
+	result := r.DB.Updates(&token)
 
 	err := result.Error
 	if err != nil {

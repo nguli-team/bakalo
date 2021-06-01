@@ -31,6 +31,15 @@ func ErrNotFound() render.Renderer {
 	}
 }
 
+func ErrUnauthorized(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: http.StatusUnauthorized,
+		StatusText:     "Unauthorized.",
+		ErrorText:      err.Error(),
+	}
+}
+
 func ErrInvalidRequest(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,

@@ -2,7 +2,6 @@ package http
 
 import (
 	"io"
-	"net/http"
 
 	"github.com/go-chi/chi"
 	chiMiddleware "github.com/go-chi/chi/middleware"
@@ -30,7 +29,7 @@ func NewChiRouter(
 	boardHandler := handler.NewBoardHandler(services.BoardService)
 	threadHandler := handler.NewThreadHandler(services.ThreadService)
 	postHandler := handler.NewPostHandler(services.PostService)
-	vipHandler := handler.VIPHandler{}
+	vipHandler := handler.NewTokenHandler(services.TokenService)
 
 	router.Route(
 		"/v1", func(r chi.Router) {
@@ -48,7 +47,7 @@ func NewChiRouter(
 			r.Get("/posts", postHandler.ListPosts)
 			r.Post("/post", postHandler.CreatePostMultipart)
 
-			r.Post("/vip", vipHandler.CreateToken)
+			r.Post("/vip", vipHandler.RequestNewToken)
 			r.Post("/vip/login", vipHandler.Login)
 		},
 	)
@@ -61,7 +60,6 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 		cors.Handler(
 			cors.Options{
 				AllowedOrigins:   []string{"https://*", "http://*"},
-				AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 				AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 				AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 				ExposedHeaders:   []string{"Link"},
@@ -75,7 +73,7 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 	router.Use(middleware.RequestIP)
 	router.Use(chiMiddleware.RequestID)
 
-	// logger chiMiddleware
+	// logger middleware
 	if env == config.Production {
 		reqLogger := logrus.New()
 		reqLogger.Formatter = &logrus.JSONFormatter{

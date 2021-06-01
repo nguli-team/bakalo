@@ -17,7 +17,7 @@ type ServeConfig struct {
 }
 
 func Serve(ctx context.Context, cfg *ServeConfig) {
-	services, err := NewServiceContainer(cfg.Config.Database)
+	services, err := NewServiceContainer(cfg.Config.Database, cfg.Config.SMTP)
 	if err != nil {
 		logger.Log().Fatal(err)
 	}

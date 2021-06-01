@@ -51,6 +51,7 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 		&domain.Board{},
 		&domain.Thread{},
 		&domain.Post{},
+		&domain.VipToken{},
 	)
 	if err != nil {
 		return err
