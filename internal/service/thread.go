@@ -143,6 +143,9 @@ func (s threadService) Create(ctx context.Context, thread *domain.Thread) (*doma
 	s.cacheStorage.Delete(cache.AllThreadsKey)
 	s.cacheStorage.Delete(cache.BoardThreadsKeyPrefix + util.Uint32ToStr(thread.BoardID))
 
+	// set poster count
+	thread.PosterCount = 1
+
 	thread, err := s.threadRepository.Create(ctx, thread)
 	if err != nil {
 		return nil, err
@@ -151,10 +154,6 @@ func (s threadService) Create(ctx context.Context, thread *domain.Thread) (*doma
 	// fill in OP details
 	op := thread.OP
 	op.ThreadID = thread.ID
-
-	// set poster and media count
-	thread.PosterCount = 1
-	thread.MediaCount = 1
 
 	thread.OP, err = s.postService.Create(ctx, op)
 	if err != nil {

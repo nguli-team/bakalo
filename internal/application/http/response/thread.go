@@ -26,8 +26,10 @@ func (rd *ThreadResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	ctx := r.Context()
 	ip := helper.GetRequestIP(ctx)
 
-	rd.OPWithIsYou = NewPostResponse(rd.OP)
-	rd.OPWithIsYou.IsYou = rd.OP.IPv4 == ip
+	if rd.OP != nil {
+		rd.OPWithIsYou = &PostResponse{Post: rd.OP}
+		rd.OPWithIsYou.IsYou = rd.OP.IPv4 == ip
+	}
 
 	if len(rd.Posts) != 0 {
 		for i := range rd.Posts {

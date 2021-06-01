@@ -75,8 +75,13 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 			},
 		)
 		if err != nil {
-			return err
+			logger.Log().Error(err)
 		}
+	}
+
+	if err != nil {
+		logger.Log().Warn("migration finished with error")
+		return nil
 	}
 
 	logger.Log().Info("migration successful")

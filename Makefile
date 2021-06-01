@@ -3,7 +3,7 @@ BIN_NAME = "bakalo"
 DOCKER_DIR = "docker"
 
 setup-dev:
-	go get -v ./...
+	go get -d -v ./...
 	[ -d media ] || mkdir media
 	docker-compose -f ${DOCKER_DIR}/docker-compose.local.yml pull
 
@@ -18,7 +18,7 @@ run-dev:
 	go run ${MAIN_FILE} serve
 
 build:
-	go build -o bin/${BIN_NAME} ${MAIN_FILE}
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/${BIN_NAME} .
 
 migrate:
 	go run ${MAIN_FILE} migrate

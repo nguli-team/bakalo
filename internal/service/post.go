@@ -160,6 +160,10 @@ func (s postService) Delete(ctx context.Context, id uint32) error {
 	_ = s.postRepository.Delete(ctx, id)
 
 	err = s.updateThreadInfo(ctx, post, thread, deletePost)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
