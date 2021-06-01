@@ -71,6 +71,7 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 		),
 	)
 
+	router.Use(middleware.RealIP)
 	router.Use(middleware.RequestIP)
 	router.Use(chiMiddleware.RequestID)
 
