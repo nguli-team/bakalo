@@ -92,6 +92,24 @@ func (s threadService) FindAll(ctx context.Context) ([]domain.Thread, error) {
 	return threads, nil
 }
 
+func (s threadService) FindPopular(ctx context.Context) ([]domain.Thread, error) {
+	threads, err := s.threadRepository.FindPopular(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: use goroutine here
+	for i, _ := range threads {
+		err := s.fillOPDetails(ctx, &threads[i])
+		if err != nil {
+			continue
+		}
+	}
+
+	return threads, nil
+
+}
+
 func (s threadService) FindByID(ctx context.Context, id uint32) (*domain.Thread, error) {
 	cacheKey := cache.ThreadPostsKeyPrefix + util.Uint32ToStr(id)
 	options := &domain.ThreadsOptions{WithPosts: true}

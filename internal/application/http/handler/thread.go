@@ -62,6 +62,30 @@ func (h ThreadHandler) ListThreads(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h ThreadHandler) ListPopularThreads(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var threads []domain.Thread
+	var err error
+
+	threads, err = h.threadService.FindPopular(ctx)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInternal(err))
+		return
+	}
+
+	if len(threads) == 0 {
+		render.JSON(w, r, make([]interface{}, 0))
+		return
+	}
+
+	err = render.RenderList(w, r, response.NewThreadListResponse(threads))
+	if err != nil {
+		_ = render.Render(w, r, response.ErrRender(err))
+		return
+	}
+}
+
 func (h ThreadHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

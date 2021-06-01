@@ -40,6 +40,7 @@ func NewChiRouter(
 
 			// thread endpoints
 			r.Get("/threads", threadHandler.ListThreads)
+			r.Get("/threads/popular", threadHandler.ListPopularThreads)
 			r.Get("/thread/{id:[0-9]+}", threadHandler.GetByID)
 			r.Post("/thread", threadHandler.CreateThreadMultipart)
 

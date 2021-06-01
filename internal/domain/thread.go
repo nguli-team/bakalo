@@ -25,6 +25,7 @@ type ThreadsOptions struct {
 
 type ThreadService interface {
 	FindAll(ctx context.Context) ([]Thread, error)
+	FindPopular(ctx context.Context) ([]Thread, error)
 	FindByBoardID(ctx context.Context, boardID uint32) ([]Thread, error)
 	FindByID(ctx context.Context, id uint32) (*Thread, error)
 	Create(ctx context.Context, board *Thread) (*Thread, error)
@@ -33,6 +34,7 @@ type ThreadService interface {
 
 type ThreadRepository interface {
 	FindAll(ctx context.Context, options *ThreadsOptions) ([]Thread, error)
+	FindPopular(ctx context.Context, options *ThreadsOptions) ([]Thread, error)
 	FindByBoardID(ctx context.Context, boardID uint32, options *ThreadsOptions) ([]Thread, error)
 	FindByID(ctx context.Context, id uint32, options *ThreadsOptions) (*Thread, error)
 	Create(ctx context.Context, board *Thread) (*Thread, error)

@@ -193,7 +193,7 @@ func (s postService) updateThreadInfo(
 	switch op {
 	case createPost:
 		// if poster not found in current thread (new poster)
-		if idx != postsCount {
+		if idx == postsCount {
 			thread.PosterCount = thread.PosterCount + 1
 		}
 		// update media count
@@ -202,7 +202,7 @@ func (s postService) updateThreadInfo(
 		}
 	case deletePost:
 		// if poster not found in current thread (new poster)
-		if idx != postsCount {
+		if idx == postsCount {
 			thread.PosterCount = thread.PosterCount - 1
 		}
 		// update media count

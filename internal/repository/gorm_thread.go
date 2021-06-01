@@ -34,6 +34,19 @@ func (r gormThreadRepository) FindAll(
 	return threads, nil
 }
 
+func (r gormThreadRepository) FindPopular(
+	ctx context.Context,
+	options *domain.ThreadsOptions,
+) ([]domain.Thread, error) {
+	var threads []domain.Thread
+	result := r.DB.Order("poster_count desc").Limit(10).Find(&threads)
+	err := result.Error
+	if err != nil {
+		return nil, err
+	}
+	return threads, nil
+}
+
 func (r gormThreadRepository) FindByBoardID(
 	ctx context.Context,
 	boardID uint32,
