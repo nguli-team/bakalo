@@ -178,11 +178,6 @@ func (s postService) updateThreadInfo(
 		return err
 	}
 
-	postsCount := len(threadPosts)
-	if postsCount == 0 {
-		return errors.New("no posts found in current thread")
-	}
-
 	// get posters in thread
 	var posters []string
 	for _, threadPost := range threadPosts {
