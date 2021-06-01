@@ -1,11 +1,11 @@
 package response
 
 import (
-	"net"
 	"net/http"
 
 	"github.com/go-chi/render"
 
+	"github.com/nguli-team/bakalo/internal/application/http/helper"
 	"github.com/nguli-team/bakalo/internal/domain"
 )
 
@@ -21,11 +21,8 @@ func NewPostResponse(post *domain.Post) *PostResponse {
 }
 
 func (rd *PostResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		// ignore if ip is not found
-		return nil
-	}
+	ctx := r.Context()
+	ip := helper.GetRequestIP(ctx)
 	rd.IsYou = rd.IPv4 == ip
 
 	return nil

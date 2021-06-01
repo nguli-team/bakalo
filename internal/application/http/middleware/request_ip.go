@@ -7,11 +7,10 @@ import (
 
 	"github.com/go-chi/render"
 
+	"github.com/nguli-team/bakalo/internal/application/http/helper"
 	"github.com/nguli-team/bakalo/internal/application/http/response"
 	"github.com/nguli-team/bakalo/internal/logger"
 )
-
-var IPContextKey = "request-ip"
 
 func RequestIP(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -24,18 +23,8 @@ func RequestIP(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx = context.WithValue(ctx, IPContextKey, ip)
+		ctx = context.WithValue(ctx, helper.IPContextKey, ip)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(fn)
-}
-
-func GetRequestIP(ctx context.Context) string {
-	if ctx == nil {
-		return ""
-	}
-	if ip, ok := ctx.Value(IPContextKey).(string); ok {
-		return ip
-	}
-	return ""
 }

@@ -14,6 +14,7 @@ type VipToken struct {
 	ID         uint32 `json:"id" gorm:"primaryKey"`
 	IP         string `json:"ip" gorm:"index"`
 	Token      string `json:"token" gorm:"uniqueIndex"`
+	PIN        int    `json:"-"`
 	Email      string `json:"email"`
 	IsValid    bool   `json:"is_valid" gorm:"default:true"`
 	ValidUntil uint32 `json:"valid_until"`
@@ -23,7 +24,7 @@ type VipToken struct {
 
 type TokenService interface {
 	CheckVIPStatus(ctx context.Context, ip string) bool
-	ValidateToken(ctx context.Context, token string) bool
+	ValidateToken(ctx context.Context, token string, pin int) bool
 	CreateNewToken(ctx context.Context, ip string, email string) (*VipToken, error)
 	UpdateTokenIP(ctx context.Context, ip string, token string) (*VipToken, error)
 	SendTokenViaEmail(ctx context.Context, token *VipToken) error

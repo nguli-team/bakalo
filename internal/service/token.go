@@ -31,9 +31,9 @@ func (s tokenService) CheckVIPStatus(ctx context.Context, ip string) bool {
 	return int64(serverToken.ValidUntil) > time.Now().Unix() && serverToken.IsValid
 }
 
-func (s tokenService) ValidateToken(ctx context.Context, token string) bool {
+func (s tokenService) ValidateToken(ctx context.Context, token string, pin int) bool {
 	serverToken, err := s.tokenRepository.FindByToken(ctx, token)
-	if err != nil {
+	if err != nil || pin != serverToken.PIN {
 		return false
 	}
 	return int64(serverToken.ValidUntil) > time.Now().Unix() && serverToken.IsValid
@@ -43,6 +43,7 @@ func (s tokenService) CreateNewToken(ctx context.Context, ip string, email strin
 	newToken := &domain.VipToken{
 		IP:         ip,
 		Token:      util.RandomAlphaNumString(16),
+		PIN:        util.RandomIntLength(6),
 		Email:      email,
 		ValidUntil: uint32(time.Now().AddDate(1, 0, 0).Unix()),
 	}
@@ -61,9 +62,6 @@ func (s tokenService) CreateNewToken(ctx context.Context, ip string, email strin
 }
 
 func (s tokenService) UpdateTokenIP(ctx context.Context, ip string, token string) (*domain.VipToken, error) {
-	if !(s.ValidateToken(ctx, token)) {
-		return nil, domain.ErrTokenInvalid
-	}
 	vipToken, err := s.tokenRepository.FindByToken(ctx, token)
 	if err != nil {
 		return nil, err
@@ -88,11 +86,13 @@ func (s tokenService) SendTokenViaEmail(ctx context.Context, token *domain.VipTo
 			"To: %s\r\n"+
 			"Subject: Pembelian VIP Token Bakalo.li\r\n\r\n"+
 			"Terimakasih atas pembeliannya! \r\n"+
-			"VIP Token kamu adalah: %s",
+			"VIP Token kamu adalah: %s\r\n"+
+			"PIN kamu adalah: %d\r\n",
 		s.smtpConfig.SenderName,
 		s.smtpConfig.Email,
 		token.Email,
 		token.Token,
+		token.PIN,
 	)
 
 	err := smtp.SendMail(smtpAddr, auth, s.smtpConfig.Email, []string{token.Email}, []byte(body))

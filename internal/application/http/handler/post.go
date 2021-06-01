@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	"github.com/nguli-team/bakalo/internal/application/http/middleware"
+	"github.com/nguli-team/bakalo/internal/application/http/helper"
 	"github.com/nguli-team/bakalo/internal/application/http/request/media"
 	"github.com/nguli-team/bakalo/internal/application/http/response"
 	"github.com/nguli-team/bakalo/internal/domain"
@@ -83,7 +83,7 @@ func (h PostHandler) CreatePostMultipart(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	opName := r.PostFormValue("name")
-	ip := middleware.GetRequestIP(ctx)
+	ip := helper.GetRequestIP(ctx)
 
 	// handle media upload
 	filename, err := media.HandleUpload(r, "media")

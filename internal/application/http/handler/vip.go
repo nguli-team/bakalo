@@ -54,9 +54,9 @@ func (h VIPHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenIsValid := h.tokenService.ValidateToken(ctx, data.Token)
+	tokenIsValid := h.tokenService.ValidateToken(ctx, data.Token, data.PIN)
 	if !tokenIsValid {
-		err := errors.New("token is not valid")
+		err := errors.New("token or pin is not valid")
 		_ = render.Render(w, r, response.ErrUnauthorized(err))
 		return
 	}

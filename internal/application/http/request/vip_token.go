@@ -1,10 +1,9 @@
 package request
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/nguli-team/bakalo/internal/application/http/middleware"
+	"github.com/nguli-team/bakalo/internal/application/http/helper"
 )
 
 type VipTokenRequest struct {
@@ -14,10 +13,7 @@ type VipTokenRequest struct {
 
 func (rd *VipTokenRequest) Bind(r *http.Request) error {
 	ctx := r.Context()
-	ip := middleware.GetRequestIP(ctx)
-	if ip == "" {
-		return errors.New("request IP is invalid")
-	}
+	ip := helper.GetRequestIP(ctx)
 
 	rd.IP = ip
 	return nil
@@ -25,15 +21,13 @@ func (rd *VipTokenRequest) Bind(r *http.Request) error {
 
 type VipLoginRequest struct {
 	Token string `json:"token"`
-	IP    string `json:"ip,omitempty"`
+	PIN   int    `json:"pin"`
+	IP    string `json:"-,omitempty"`
 }
 
 func (rd *VipLoginRequest) Bind(r *http.Request) error {
 	ctx := r.Context()
-	ip := middleware.GetRequestIP(ctx)
-	if ip == "" {
-		return errors.New("request IP is invalid")
-	}
+	ip := helper.GetRequestIP(ctx)
 
 	rd.IP = ip
 	return nil
