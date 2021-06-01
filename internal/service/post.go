@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"sort"
 	"strconv"
 
 	"github.com/nguli-team/bakalo/internal/domain"
@@ -191,13 +190,12 @@ func (s postService) updateThreadInfo(
 	}
 
 	// find current poster in thread posters
-	sort.Strings(posters)
-	idx := sort.SearchStrings(posters, post.PosterID)
+	newPoster := !util.ContainsString(posters, post.PosterID)
 
 	switch op {
 	case createPost:
-		// if poster not found in current thread (new poster)
-		if idx == postsCount {
+		// if new poster
+		if newPoster {
 			thread.PosterCount = thread.PosterCount + 1
 		}
 		// update media count
@@ -205,8 +203,8 @@ func (s postService) updateThreadInfo(
 			thread.MediaCount = thread.MediaCount + 1
 		}
 	case deletePost:
-		// if poster not found in current thread (new poster)
-		if idx == postsCount {
+		// if new poster
+		if newPoster {
 			thread.PosterCount = thread.PosterCount - 1
 		}
 		// update media count
