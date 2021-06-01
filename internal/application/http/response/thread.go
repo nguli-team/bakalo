@@ -12,6 +12,7 @@ import (
 type ThreadResponse struct {
 	*domain.Thread
 
+	OPWithIsYou   *PostResponse   `json:"op"`
 	PostResponses []*PostResponse `json:"posts,omitempty"`
 }
 
@@ -22,9 +23,13 @@ func NewThreadResponse(thread *domain.Thread) *ThreadResponse {
 }
 
 func (rd *ThreadResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	ctx := r.Context()
+	ip := helper.GetRequestIP(ctx)
+
+	rd.OPWithIsYou = NewPostResponse(rd.OP)
+	rd.OPWithIsYou.IsYou = rd.OP.IPv4 == ip
+
 	if len(rd.Posts) != 0 {
-		ctx := r.Context()
-		ip := helper.GetRequestIP(ctx)
 		for i := range rd.Posts {
 			pResponse := NewPostResponse(&rd.Posts[i])
 			pResponse.IsYou = ip == pResponse.IPv4
