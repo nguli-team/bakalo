@@ -165,5 +165,5 @@ func (r gormThreadRepository) getPostsCount(ctx context.Context, id uint32) (uin
 	if err != nil {
 		return 0, err
 	}
-	return uint32(postCount), nil
+	return uint32(postCount) - 1, nil
 }
