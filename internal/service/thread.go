@@ -29,7 +29,7 @@ func NewThreadService(
 	}
 }
 
-func (s threadService) fillOPDetails(ctx context.Context, thread *domain.Thread) error {
+func (s threadService) fillThreadDetails(ctx context.Context, thread *domain.Thread) error {
 	op, err := s.postService.FindThreadOP(ctx, thread.ID)
 	if err != nil {
 		logger.Log().Warn(err)
@@ -63,7 +63,7 @@ func (s threadService) FindByBoardID(ctx context.Context, boardID uint32) ([]dom
 
 	// TODO: use goroutine here
 	for i, _ := range threads {
-		err := s.fillOPDetails(ctx, &threads[i])
+		err := s.fillThreadDetails(ctx, &threads[i])
 		if err != nil {
 			continue
 		}
@@ -83,7 +83,7 @@ func (s threadService) FindAll(ctx context.Context) ([]domain.Thread, error) {
 
 	// TODO: use goroutine here
 	for i, _ := range threads {
-		err := s.fillOPDetails(ctx, &threads[i])
+		err := s.fillThreadDetails(ctx, &threads[i])
 		if err != nil {
 			continue
 		}
@@ -100,7 +100,7 @@ func (s threadService) FindPopular(ctx context.Context) ([]domain.Thread, error)
 
 	// TODO: use goroutine here
 	for i, _ := range threads {
-		err := s.fillOPDetails(ctx, &threads[i])
+		err := s.fillThreadDetails(ctx, &threads[i])
 		if err != nil {
 			continue
 		}
@@ -130,7 +130,7 @@ func (s threadService) FindByID(ctx context.Context, id uint32) (*domain.Thread,
 		s.cacheStorage.Set(cacheKey, thread.Posts, cache.DefaultExpiration)
 	}
 
-	err = s.fillOPDetails(ctx, thread)
+	err = s.fillThreadDetails(ctx, thread)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func (s threadService) Update(ctx context.Context, thread *domain.Thread) (*doma
 	}
 
 	// embed OP to thread before returning
-	err = s.fillOPDetails(ctx, thread)
+	err = s.fillThreadDetails(ctx, thread)
 	if err != nil {
 		return nil, err
 	}

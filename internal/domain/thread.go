@@ -9,6 +9,7 @@ type Thread struct {
 	Sticky      bool   `json:"sticky"`
 	Locked      bool   `json:"locked"`
 	PosterCount uint32 `json:"poster_count"`
+	ReplyCount  uint32 `json:"reply_count" gorm:"-"`
 	MediaCount  uint32 `json:"media_count"`
 	CreatedAt   uint32 `json:"created_at"`
 	UpdatedAt   uint32 `json:"updated_at"`

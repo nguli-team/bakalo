@@ -31,6 +31,12 @@ func (r gormThreadRepository) FindAll(
 	if err != nil {
 		return nil, err
 	}
+	for i := range threads {
+		threads[i].ReplyCount, err = r.getPostsCount(ctx, threads[i].ID)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return threads, nil
 }
 
@@ -43,6 +49,12 @@ func (r gormThreadRepository) FindPopular(
 	err := result.Error
 	if err != nil {
 		return nil, err
+	}
+	for i := range threads {
+		threads[i].ReplyCount, err = r.getPostsCount(ctx, threads[i].ID)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return threads, nil
 }
@@ -61,6 +73,14 @@ func (r gormThreadRepository) FindByBoardID(
 	if err != nil {
 		return nil, err
 	}
+
+	for i := range threads {
+		threads[i].ReplyCount, err = r.getPostsCount(ctx, threads[i].ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return threads, nil
 }
 
@@ -85,14 +105,20 @@ func (r gormThreadRepository) FindByID(
 	} else {
 		result = r.DB.Find(&thread, id)
 	}
-	err := result.Error
 
+	err := result.Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, storage.ErrRecordNotFound
 		}
 		return nil, err
 	}
+
+	thread.ReplyCount, err = r.getPostsCount(ctx, thread.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return thread, nil
 }
 
@@ -102,6 +128,10 @@ func (r gormThreadRepository) Create(
 ) (*domain.Thread, error) {
 	result := r.DB.Create(thread)
 	err := result.Error
+	if err != nil {
+		return nil, err
+	}
+	thread.ReplyCount, err = r.getPostsCount(ctx, thread.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,9 +147,23 @@ func (r gormThreadRepository) Update(
 	if err != nil {
 		return nil, err
 	}
+	thread.ReplyCount, err = r.getPostsCount(ctx, thread.ID)
+	if err != nil {
+		return nil, err
+	}
 	return thread, nil
 }
 
 func (r gormThreadRepository) Delete(ctx context.Context, id int64) error {
 	panic("implement me")
+}
+
+func (r gormThreadRepository) getPostsCount(ctx context.Context, id uint32) (uint32, error) {
+	var postCount int64
+	result := r.DB.Model(&domain.Post{}).Where(&domain.Post{ThreadID: id}).Count(&postCount)
+	err := result.Error
+	if err != nil {
+		return 0, err
+	}
+	return uint32(postCount), nil
 }
