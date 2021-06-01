@@ -44,7 +44,16 @@ func (r gormPostRepository) FindByThreadID(
 }
 
 func (r gormPostRepository) FindByID(ctx context.Context, id uint32) (*domain.Post, error) {
-	panic("implement me")
+	var post *domain.Post
+	result := r.DB.First(&post, id)
+	err := result.Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, storage.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	return post, nil
 }
 
 func (r gormPostRepository) FindThreadOP(
@@ -76,6 +85,7 @@ func (r gormPostRepository) Update(ctx context.Context, post *domain.Post) (*dom
 	panic("implement me")
 }
 
-func (r gormPostRepository) Delete(ctx context.Context, id int64) error {
-	panic("implement me")
+func (r gormPostRepository) Delete(ctx context.Context, id uint32) error {
+	r.DB.Delete(&domain.Post{}, id)
+	return nil
 }

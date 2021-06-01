@@ -19,7 +19,9 @@ type PostService interface {
 	FindAll(ctx context.Context) ([]Post, error)
 	FindByThreadID(ctx context.Context, threadID uint32) ([]Post, error)
 	FindThreadOP(ctx context.Context, threadID uint32) (*Post, error)
+	FindByID(ctx context.Context, id uint32) (*Post, error)
 	Create(ctx context.Context, post *Post) (*Post, error)
+	Delete(ctx context.Context, id uint32) error
 }
 
 type PostRepository interface {
@@ -29,5 +31,5 @@ type PostRepository interface {
 	FindThreadOP(ctx context.Context, threadID uint32) (*Post, error)
 	Create(ctx context.Context, post *Post) (*Post, error)
 	Update(ctx context.Context, post *Post) (*Post, error)
-	Delete(ctx context.Context, id int64) error
+	Delete(ctx context.Context, id uint32) error
 }

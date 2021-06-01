@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/render"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/nguli-team/bakalo/internal/application/http/request/media"
 	"github.com/nguli-team/bakalo/internal/application/http/response"
 	"github.com/nguli-team/bakalo/internal/domain"
+	"github.com/nguli-team/bakalo/internal/storage"
 	"github.com/nguli-team/bakalo/internal/util"
 )
 
@@ -120,4 +122,53 @@ func (h PostHandler) CreatePostMultipart(w http.ResponseWriter, r *http.Request)
 		_ = render.Render(w, r, response.ErrRender(err))
 		return
 	}
+}
+
+func (h PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id, err := FetchIDFromParam(r, "id")
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+
+	post, err := h.postService.FindByID(ctx, id)
+	if err != nil {
+		switch err {
+		case storage.ErrRecordNotFound:
+			_ = render.Render(w, r, response.ErrNotFound())
+			break
+		default:
+			_ = render.Render(w, r, response.ErrInternal(err))
+		}
+		return
+	}
+
+	ip := helper.GetRequestIP(ctx)
+	if post.IPv4 != ip {
+		err := errors.New("poster IP is not the same")
+		_ = render.Render(w, r, response.ErrForbidden(err))
+		return
+	}
+
+	postTime := time.Unix(int64(post.CreatedAt), 0)
+	timeSincePost := time.Since(postTime)
+	if timeSincePost > 1*time.Minute {
+		err := errors.New("1 minute has passed since post creation")
+		_ = render.Render(w, r, response.ErrForbidden(err))
+		return
+	}
+
+	err = h.postService.Delete(ctx, id)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInternal(err))
+		return
+	}
+
+	res := struct {
+		ID uint32 `json:"id"`
+	}{ID: id}
+
+	render.JSON(w, r, res)
 }

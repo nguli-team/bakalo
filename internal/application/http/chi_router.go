@@ -46,6 +46,7 @@ func NewChiRouter(
 			// post endpoints
 			r.Get("/posts", postHandler.ListPosts)
 			r.Post("/post", postHandler.CreatePostMultipart)
+			r.Delete("/post/{id:[0-9]+}", postHandler.DeletePost)
 
 			r.Post("/vip", vipHandler.RequestNewToken)
 			r.Post("/vip/login", vipHandler.Login)

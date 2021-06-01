@@ -40,6 +40,15 @@ func ErrUnauthorized(err error) render.Renderer {
 	}
 }
 
+func ErrForbidden(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: http.StatusForbidden,
+		StatusText:     "Forbidden.",
+		ErrorText:      err.Error(),
+	}
+}
+
 func ErrInvalidRequest(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
