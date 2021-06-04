@@ -1,0 +1,41 @@
+environment: development
+
+server:
+  hostname: localhost
+  port: 8080
+  prefix:
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: local_password
+  database: bakalo
+  timezone: Asia/Jakarta
+  auto_migrate: true
+
+smtp:
+  host: mail.postale.io
+  port: 587
+  sender_name: Administrator Bakalo.li
+  email: contact@bakalo.li
+  password: PQ9Vgd4EiE4U
+
+app:
+  boards:
+    pol:
+      name: "Politik"
+      shorthand: "pol"
+      description: "Tempat berdiskusi politik dan berita politik terkini"
+    teh:
+      name: "Teknologi"
+      shorthand: "teh"
+      description: "Tempat berdiskusi teknologi seperti pemrograman, komputer, gadget, dan lainnya"
+    oto:
+      name: "Otomotif"
+      shorthand: "oto"
+      description: "Tempat berdiskusi otomotif"
+    ipa:
+      name: "Sains dan Matematika"
+      shorthand: "ipa"
+      description: "Tempat berdiskusi sains dan ilmu eksak lainnya"
