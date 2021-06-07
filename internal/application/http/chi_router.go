@@ -64,7 +64,7 @@ func initMiddlewares(router *chi.Mux, env config.Environment, loggerOutput io.Wr
 		cors.Handler(
 			cors.Options{
 				AllowedOrigins:   []string{"https://*", "http://*"},
-				AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+				AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 				AllowedHeaders:   []string{"*"},
 				ExposedHeaders:   []string{"Link"},
 				AllowCredentials: true,
