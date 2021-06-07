@@ -154,8 +154,9 @@ func (r gormThreadRepository) Update(
 	return thread, nil
 }
 
-func (r gormThreadRepository) Delete(ctx context.Context, id int64) error {
-	panic("implement me")
+func (r gormThreadRepository) Delete(ctx context.Context, id uint32) error {
+	r.DB.Delete(&domain.Thread{}, id)
+	return nil
 }
 
 func (r gormThreadRepository) getPostsCount(ctx context.Context, id uint32) (uint32, error) {

@@ -143,7 +143,7 @@ func (s postService) Delete(ctx context.Context, id uint32) error {
 	threadOP, err := s.FindThreadOP(ctx, post.ThreadID)
 	if err == nil {
 		if threadOP.ID == id {
-			return errors.New("post is an OP and cannot be deleted")
+			return errors.New("post is an OP and cannot be deleted, delete the thread instead")
 		}
 	}
 

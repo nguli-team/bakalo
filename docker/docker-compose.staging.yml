@@ -1,15 +1,32 @@
 version: "3"
 
 services:
+  client:
+    image: okkariswana/bakalo-client:latest
+    environment:
+      VIRTUAL_HOST: "staging.bakalo.li"
+      LETSENCRYPT_HOST: "staging.bakalo.li"
+      VIRTUAL_PORT: "80"
+      DEFAULT_EMAIL: "okka.riswana@protonmail.com"
+    ports:
+      - "18082:80"
+    depends_on:
+      - web_server
+
   web_server:
     image: okkariswana/bakalo:latest
     environment:
       CONFIG_FILE: "/app/config.prod.yml"
+      VIRTUAL_HOST: "staging.api.bakalo.li"
+      LETSENCRYPT_HOST: "staging.api.bakalo.li"
+      VIRTUAL_PORT: "8080"
+      DEFAULT_EMAIL: "okka.riswana@protonmail.com"
+    command: "sh -c './bakalo migrate && ./bakalo serve'"
     volumes:
       - "./config.prod.yml:/app/config.prod.yml"
       - "./media:/app/media"
     ports:
-      - "8080:8080"
+      - "18080:8080"
     depends_on:
       - db
 
@@ -22,14 +39,24 @@ services:
     volumes:
       - "./postgres-data:/var/lib/postgresql/data"
     ports:
-      - "5432:5432"
+      - "15432:5432"
 
   media_server:
     image: halverneus/static-file-server
     environment:
-      CORS: "false"
+      CORS: "true"
       FOLDER: "/media"
+      VIRTUAL_HOST: "staging.media.bakalo.li"
+      LETSENCRYPT_HOST: "staging.media.bakalo.li"
+      VIRTUAL_PORT: "8080"
+      DEFAULT_EMAIL: "okka.riswana@protonmail.com"
     volumes:
       - "./media:/media"
     ports:
-      - "8081:8080"
+      - "18081:8080"
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
+

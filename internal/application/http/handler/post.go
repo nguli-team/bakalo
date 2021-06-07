@@ -145,19 +145,21 @@ func (h PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := helper.GetRequestIP(ctx)
-	if post.IPv4 != ip {
-		err := errors.New("poster IP is not the same")
-		_ = render.Render(w, r, response.ErrForbidden(err))
-		return
-	}
+	if !domain.IsAdminRequest(r) {
+		ip := helper.GetRequestIP(ctx)
+		if post.IPv4 != ip {
+			err := errors.New("poster IP is not the same")
+			_ = render.Render(w, r, response.ErrForbidden(err))
+			return
+		}
 
-	postTime := time.Unix(int64(post.CreatedAt), 0)
-	timeSincePost := time.Since(postTime)
-	if timeSincePost > 1*time.Minute {
-		err := errors.New("1 minute has passed since post creation")
-		_ = render.Render(w, r, response.ErrForbidden(err))
-		return
+		postTime := time.Unix(int64(post.CreatedAt), 0)
+		timeSincePost := time.Since(postTime)
+		if timeSincePost > 1*time.Minute {
+			err := errors.New("1 minute has passed since post creation")
+			_ = render.Render(w, r, response.ErrForbidden(err))
+			return
+		}
 	}
 
 	err = h.postService.Delete(ctx, id)

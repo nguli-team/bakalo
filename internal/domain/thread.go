@@ -31,6 +31,7 @@ type ThreadService interface {
 	FindByID(ctx context.Context, id uint32) (*Thread, error)
 	Create(ctx context.Context, board *Thread) (*Thread, error)
 	Update(ctx context.Context, board *Thread) (*Thread, error)
+	Delete(ctx context.Context, id uint32) error
 }
 
 type ThreadRepository interface {
@@ -40,5 +41,5 @@ type ThreadRepository interface {
 	FindByID(ctx context.Context, id uint32, options *ThreadsOptions) (*Thread, error)
 	Create(ctx context.Context, board *Thread) (*Thread, error)
 	Update(ctx context.Context, board *Thread) (*Thread, error)
-	Delete(ctx context.Context, id int64) error
+	Delete(ctx context.Context, id uint32) error
 }

@@ -182,3 +182,31 @@ func (h ThreadHandler) CreateThreadMultipart(w http.ResponseWriter, r *http.Requ
 		return
 	}
 }
+
+func (h ThreadHandler) DeleteThread(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	if !domain.IsAdminRequest(r) {
+		err := errors.New("contact an admin to delete this thread")
+		_ = render.Render(w, r, response.ErrForbidden(err))
+		return
+	}
+
+	id, err := FetchIDFromParam(r, "id")
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInvalidRequest(err))
+		return
+	}
+
+	err = h.threadService.Delete(ctx, id)
+	if err != nil {
+		_ = render.Render(w, r, response.ErrInternal(err))
+		return
+	}
+
+	res := struct {
+		ID uint32 `json:"id"`
+	}{ID: id}
+
+	render.JSON(w, r, res)
+}

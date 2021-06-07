@@ -179,3 +179,18 @@ func (s threadService) Update(ctx context.Context, thread *domain.Thread) (*doma
 
 	return thread, err
 }
+
+func (s threadService) Delete(ctx context.Context, id uint32) error {
+	thread, err := s.FindByID(ctx, id)
+	if err != nil {
+		return nil
+	}
+
+	// invalidate caches first
+	s.cacheStorage.Delete(cache.AllThreadsKey)
+	s.cacheStorage.Delete(cache.BoardThreadsKeyPrefix + util.Uint32ToStr(thread.BoardID))
+
+	_ = s.threadRepository.Delete(ctx, id)
+
+	return nil
+}

@@ -23,6 +23,15 @@ func NewTokenService(tokenRepository domain.TokenRepository, smtpConfig config.S
 	}
 }
 
+func (s tokenService) FindByIP(ctx context.Context, ip string) (*domain.VipToken, error) {
+	token, err := s.tokenRepository.FindByIP(ctx, ip)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
 func (s tokenService) CheckVIPStatus(ctx context.Context, ip string) bool {
 	serverToken, err := s.tokenRepository.FindByIP(ctx, ip)
 	if err != nil {

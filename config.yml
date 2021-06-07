@@ -1,7 +1,7 @@
 environment: development
 
 server:
-  hostname: localhost
+  hostname: 0.0.0.0
   port: 8080
   prefix:
 
@@ -39,3 +39,31 @@ app:
       name: "Sains dan Matematika"
       shorthand: "ipa"
       description: "Tempat berdiskusi sains dan ilmu eksak lainnya"
+    gim:
+      name: "Video Games"
+      shorthand: "gim"
+      description: "Tempat berdiskusi video game terkini"
+    mus:
+      name: "Musik"
+      shorthand: "mus"
+      description: "Tempat berdiskusi musik terkini"
+    ora:
+      name: "Olahraga"
+      shorthand: "ora"
+      description: "Tempat berdiskusi olahraga"
+    tvf:
+      name: "TV & Film"
+      shorthand: "tvf"
+      description: "Tempat berdiskusi film terkini"
+    wib:
+      name: "Anime & Manga"
+      shorthand: "wib"
+      description: "Tempat berdiskusi anime dan manga terkini"
+    par:
+      name: "Paranormal"
+      shorthand: "par"
+      description: "Tempat berdiskusi Paranormal"
+    biz:
+      name: "Bisnis & Keuangan"
+      shorthand: "biz"
+      description: "Tempat berdiskusi bisnis & keuangan"
