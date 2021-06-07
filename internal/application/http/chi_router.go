@@ -44,7 +44,7 @@ func NewChiRouter(
 			r.Get("/threads/popular", threadHandler.ListPopularThreads)
 			r.Get("/thread/{id:[0-9]+}", threadHandler.GetByID)
 			r.Post("/thread", threadHandler.CreateThreadMultipart)
-			r.Delete("/thread/:id", threadHandler.DeleteThread)
+			r.Delete("/thread/{id:[0-9]+}", threadHandler.DeleteThread)
 
 			// post endpoints
 			r.Get("/posts", postHandler.ListPosts)
