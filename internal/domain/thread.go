@@ -15,7 +15,7 @@ type Thread struct {
 	UpdatedAt   uint32 `json:"updated_at"`
 	OPID        uint32 `json:"op_id,omitempty" gorm:"-"`
 	OP          *Post  `json:"op,omitempty" gorm:"-"`
-	Posts       []Post `json:"posts,omitempty"`
+	Posts       []Post `json:"posts,omitempty" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type ThreadsOptions struct {

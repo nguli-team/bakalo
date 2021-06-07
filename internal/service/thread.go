@@ -190,7 +190,10 @@ func (s threadService) Delete(ctx context.Context, id uint32) error {
 	s.cacheStorage.Delete(cache.AllThreadsKey)
 	s.cacheStorage.Delete(cache.BoardThreadsKeyPrefix + util.Uint32ToStr(thread.BoardID))
 
-	_ = s.threadRepository.Delete(ctx, id)
+	err = s.threadRepository.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
