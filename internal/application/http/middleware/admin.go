@@ -15,11 +15,13 @@ func TokenRequest(tokenService domain.TokenService) func(next http.Handler) http
 
 			ip := helper.GetRequestIP(ctx)
 			if ip == "" {
+				next.ServeHTTP(w, r)
 				return
 			}
 
 			token, err := tokenService.FindByIP(ctx, ip)
 			if err != nil {
+				next.ServeHTTP(w, r)
 				return
 			}
 

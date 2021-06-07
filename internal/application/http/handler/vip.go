@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/render"
 
+	"github.com/nguli-team/bakalo/internal/application/http/helper"
 	"github.com/nguli-team/bakalo/internal/application/http/request"
 	"github.com/nguli-team/bakalo/internal/application/http/response"
 	"github.com/nguli-team/bakalo/internal/domain"
@@ -59,6 +60,11 @@ func (h VIPHandler) Login(w http.ResponseWriter, r *http.Request) {
 		err := errors.New("token or pin is not valid")
 		_ = render.Render(w, r, response.ErrUnauthorized(err))
 		return
+	}
+
+	oldToken, err := h.tokenService.FindByIP(ctx, helper.GetRequestIP(ctx))
+	if err == nil {
+		_, _ = h.tokenService.UpdateTokenIP(ctx, "", oldToken.Token)
 	}
 
 	updatedToken, err := h.tokenService.UpdateTokenIP(ctx, data.IP, data.Token)
