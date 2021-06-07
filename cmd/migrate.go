@@ -81,7 +81,6 @@ func migrateGorm(cfg config.Config, tableOnly bool) error {
 
 	tokenRepo := repository.NewGormTokenRepository(db)
 	adminToken := &domain.VipToken{
-		ID:         1,
 		Token:      "secureadmintoken",
 		PIN:        999999,
 		Email:      "contact@bakalo.li",
